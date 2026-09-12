@@ -54,10 +54,27 @@ CLOUD_SERVER="https://你的服务器" npm run tauri build
 
 | 流水线 | 触发条件 | 产物 |
 |---|---|---|
-| `Build Windows App` | 推送 `v*` 标签 / 手动触发 | exe + 安装包；打标签时自动创建 GitHub Release |
+| `Build Windows App` | 推送 `v*` 标签 / 手动触发 | exe + 安装包；**打标签时自动创建 GitHub Release 并附上两个文件** |
 | `Publish Server Image` | 推送 main / `v*` 标签 / 手动触发 | 容器镜像 `ghcr.io/btrencai/zhaoxi-cloud` |
 
-发布新版本：`git tag v1.0.0 && git push origin v1.0.0`
+### 发一个新版本（全自动出 Release）
+
+```bash
+# 1) 改版本号（package.json / src-tauri/tauri.conf.json / src-tauri/Cargo.toml）
+# 2) 提交后打标签并推送：
+git tag v1.0.1 && git push origin v1.0.1
+```
+
+推送标签后会自动完成：构建 exe → 构建安装包 → 创建 Release（自动生成更新说明）→ 附上两个文件。
+
+> 也可以在 GitHub 网页端「Releases → Draft a new release」直接新建标签发布，同样会触发构建并自动补齐文件。
+
+如需重跑某个版本的构建（比如构建失败后修复重试）：
+
+```bash
+git tag -d v1.0.1 && git push origin :refs/tags/v1.0.1   # 删除旧标签
+git tag v1.0.1 && git push origin v1.0.1                 # 重新打标签推送
+```
 
 ## 服务端（云同步）
 

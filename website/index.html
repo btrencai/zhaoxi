@@ -122,13 +122,7 @@
     animation:float 7s ease-in-out infinite;
   }
   @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-  @media (prefers-reduced-motion: reduce){
-    .float{animation:none}
-    .aurora i{animation:none !important}
-    .reveal{opacity:1 !important; transform:none !important; filter:none !important}
-    html.js nav{opacity:1 !important; transform:none !important}
-    html{scroll-behavior:auto}
-  }
+  /* 产品决策：官网不响应 prefers-reduced-motion（动画始终播放） */
 
   /* ── 通用区块 ── */
   section{padding:110px 24px}
@@ -413,7 +407,7 @@
 </footer>
 
 <script>
-  const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const REDUCE = false; // 产品决策：始终播放动画（不响应 prefers-reduced-motion）
   const nav = document.getElementById('nav');
   const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
   onScroll(); window.addEventListener('scroll', onScroll, {passive:true});

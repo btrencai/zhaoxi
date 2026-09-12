@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>document.documentElement.classList.add('js')</script>
 <title>朝夕 —— 本地优先的 Windows 效率工作台</title>
 <meta name="description" content="朝夕：一款安静、体面的 Windows 效率工作台。待办、便签、专注与你的全部数据，始终留在你自己的电脑里。">
 <link rel="icon" href="assets/icon.png">
@@ -124,6 +125,7 @@
   @media (prefers-reduced-motion: reduce){
     .float{animation:none}
     .reveal{opacity:1 !important; transform:none !important}
+    html.js nav{opacity:1 !important; transform:none !important}
     html{scroll-behavior:auto}
   }
 
@@ -208,8 +210,25 @@
   .foot-l{display:flex; gap:18px; flex-wrap:wrap}
 
   /* ── 滚动显现 ── */
-  .reveal{opacity:0; transform:translateY(26px); transition:opacity .8s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1)}
-  .reveal.in{opacity:1; transform:none}
+  html.js .reveal{opacity:0; transform:translateY(30px); transition:opacity .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1)}
+  html.js .reveal.in{opacity:1; transform:none}
+  html.js .hero .d1{transition-delay:.05s}
+  html.js .hero .d2{transition-delay:.13s}
+  html.js .hero .d3{transition-delay:.21s}
+  html.js .hero .d4{transition-delay:.29s}
+  html.js .hero .d5{transition-delay:.37s}
+  html.js .hero .d6{transition-delay:.45s}
+  html.js .hero .d7{transition-delay:.53s}
+  html.js .hero .d8{transition-delay:.61s}
+  html.js .hero-icon.reveal{transform:translateY(16px) scale(.6)}
+  html.js .split .txt.reveal{transform:translate(-30px, 14px)}
+  html.js .split .shot.reveal{transform:translate(36px, 18px) scale(.985)}
+  html.js .split.rev .txt.reveal{transform:translate(30px, 14px)}
+  html.js .split.rev .shot.reveal{transform:translate(-36px, 18px) scale(.985)}
+  html.js nav{opacity:0; transform:translateY(-8px); transition:opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1), border-color .3s}
+  html.js body.loaded nav{opacity:1; transform:none}
+  .hero-shot .frame{will-change:transform}
+  .cnt{font-style:normal}
 </style>
 </head>
 <body>
@@ -226,19 +245,19 @@
 </nav>
 
 <header class="hero" id="top">
-  <img class="hero-icon float" src="assets/icon.png" alt="朝夕 图标">
-  <div class="eyebrow">本地优先 · 数据不出电脑</div>
-  <h1>朝夕</h1>
-  <div class="tagline">朝有所为，夕有所成。</div>
-  <p class="sub">一款安静、体面的 Windows 效率工作台。<br>待办、便签与专注，收进一处；所有数据，只留在你自己的电脑。</p>
-  <div class="cta-row">
+  <img class="hero-icon float reveal d1" src="assets/icon.png" alt="朝夕 图标">
+  <div class="eyebrow reveal d2">本地优先 · 数据不出电脑</div>
+  <h1 class="reveal d3">朝夕</h1>
+  <div class="tagline reveal d4">朝有所为，夕有所成。</div>
+  <p class="sub reveal d5">一款安静、体面的 Windows 效率工作台。<br>待办、便签与专注，收进一处；所有数据，只留在你自己的电脑。</p>
+  <div class="cta-row reveal d6">
     <a class="btn btn-primary" href="https://github.com/btrencai/zhaoxi/releases/latest">下载 Windows 版</a>
     <a class="btn btn-ghost" href="#features">进一步了解
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
     </a>
   </div>
-  <div class="hero-meta">Windows 10 / 11 · 约 5 MB · 免费</div>
-  <div class="hero-shot reveal">
+  <div class="hero-meta reveal d7">Windows 10 / 11 · 约 5 MB · 免费</div>
+  <div class="hero-shot reveal d8">
     <div class="frame"><img src="assets/shot-todos-light.png" alt="朝夕 待办界面"></div>
   </div>
 </header>
@@ -299,9 +318,9 @@
 <section id="quality" class="darkblock">
   <div class="wrap">
     <div class="stats">
-      <div class="stat reveal"><b>5 MB</b><span>主程序体积，无捆绑内核</span></div>
-      <div class="stat reveal"><b>100%</b><span>数据保存在你自己的电脑</span></div>
-      <div class="stat reveal"><b>2 套主题</b><span>浅色 / 深色，跟随系统自动</span></div>
+      <div class="stat reveal"><b><span class="cnt" data-to="5">5</span> MB</b><span>主程序体积，无捆绑内核</span></div>
+      <div class="stat reveal"><b><span class="cnt" data-to="100">100</span>%</b><span>数据保存在你自己的电脑</span></div>
+      <div class="stat reveal"><b><span class="cnt" data-to="2">2</span> 套主题</b><span>浅色 / 深色，跟随系统自动</span></div>
     </div>
     <div class="grid6">
       <div class="feat reveal">
@@ -366,15 +385,64 @@
 </footer>
 
 <script>
+  const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const nav = document.getElementById('nav');
   const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
   onScroll(); window.addEventListener('scroll', onScroll, {passive:true});
 
+  // 滚动入场：网格类元素（数字 / 特性卡）级联延迟
   const io = new IntersectionObserver((entries) => {
-    for (const e of entries) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      const el = e.target;
+      if (!REDUCE && el.matches('.stat, .feat')) {
+        const group = [...el.parentElement.children].filter((c) => c.matches('.stat, .feat'));
+        const idx = group.indexOf(el);
+        if (idx > 0) el.style.transitionDelay = (idx * 90) + 'ms';
+        setTimeout(() => { el.style.transitionDelay = ''; }, 1500);
+      }
+      el.classList.add('in');
+      io.unobserve(el);
+    }
   }, {threshold:.12, rootMargin:'0px 0px -8% 0px'});
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
+  // 数字滚动（5 MB / 100% / 2 套主题）
+  if (!REDUCE) {
+    const cntIO = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        const el = e.target;
+        const to = Number(el.dataset.to || '0');
+        const t0 = performance.now();
+        const tick = (t) => {
+          const p = Math.min(1, (t - t0) / 950);
+          el.textContent = String(Math.round(to * (1 - Math.pow(1 - p, 3))));
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+        cntIO.unobserve(el);
+      }
+    }, {threshold:.5});
+    document.querySelectorAll('.cnt').forEach(c => cntIO.observe(c));
+  }
+
+  // 首屏大图视差
+  const frame = document.querySelector('.hero-shot .frame');
+  if (frame && !REDUCE) {
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = Math.min(window.scrollY * 0.12, 90);
+        frame.style.transform = y > 1 ? 'translate3d(0, ' + y + 'px, 0)' : '';
+        ticking = false;
+      });
+    }, {passive:true});
+  }
+
+  document.body.classList.add('loaded');
   document.getElementById('year').textContent = new Date().getFullYear();
 </script>
 </body>

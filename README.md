@@ -31,8 +31,8 @@ Tauri 2 · Rust · TypeScript · 原生 DOM · 零前端框架
 
 | 文件 | 说明 |
 |---|---|
-| `simple-todo.exe` | 便携版（单文件绿色版，双击即用） |
-| `朝夕_1.0.0_x64-setup.exe` | NSIS 安装版（开始菜单 + 卸载） |
+| `zhaoxi-v1.0.0-portable.exe` | 便携版（单文件绿色版，双击即用） |
+| `zhaoxi-v1.0.0-setup.exe` | NSIS 安装版（开始菜单 + 卸载） |
 
 > 未做代码签名，首次运行如遇 SmartScreen 提示请选择"仍要运行"。
 

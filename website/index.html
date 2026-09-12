@@ -7,7 +7,9 @@
 <title>朝夕 —— 本地优先的 Windows 效率工作台</title>
 <meta name="description" content="朝夕：一款安静、体面的 Windows 效率工作台。待办、便签、专注与你的全部数据，始终留在你自己的电脑里。">
 <link rel="icon" href="assets/icon.png">
+<link rel="preload" href="assets/notoserifsc-sub.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+  @font-face{font-family:"Noto Serif SC"; src:url("assets/notoserifsc-sub.woff2") format("woff2"); font-weight:600; font-display:swap}
   :root{
     --ink:#1d1d1f; --ink-2:#4d4d51; --ink-3:#77777c;
     --bg:#ffffff; --bg-soft:#f5f5f7; --card:#ffffff;
@@ -17,6 +19,7 @@
     --shadow-lg:0 30px 90px rgba(29,29,60,.16);
     --shadow-md:0 16px 50px rgba(29,29,60,.12);
     --nav-bg:rgba(255,255,255,.72);
+    --serif:"Noto Serif SC","Songti SC","STSong","SimSun",serif;
     --hero-veil:radial-gradient(1200px 620px at 22% -12%, rgba(125,110,251,.20), transparent 62%),
                 radial-gradient(980px 560px at 92% -6%, rgba(255,180,107,.16), transparent 58%);
   }
@@ -55,7 +58,7 @@
   nav.scrolled{border-bottom-color:var(--line)}
   .nav-l{display:flex; align-items:center; gap:10px; font-weight:700; font-size:15.5px; letter-spacing:.02em}
   .nav-l img{width:22px; height:22px; border-radius:6px; box-shadow:0 2px 8px rgba(79,69,208,.35)}
-  .nav-links{display:flex; gap:26px; font-size:13px; color:var(--ink-2)}
+  .nav-links{display:flex; gap:28px; font-size:13.5px; color:var(--ink-2)}
   .nav-links a:hover{color:var(--ink)}
   .nav-cta{
     font-size:12.5px; font-weight:600; color:#fff; background:var(--grad);
@@ -63,12 +66,13 @@
     transition:transform .25s cubic-bezier(.34,1.4,.64,1), box-shadow .25s;
   }
   .nav-cta:hover{transform:translateY(-1px) scale(1.02); box-shadow:0 10px 26px rgba(79,69,208,.45)}
+  .cta-short{display:none}
   @media (max-width:760px){ .nav-links{display:none} }
 
   /* ── Hero ── */
   .hero{
     position:relative; overflow:hidden;
-    padding:150px 24px 110px; text-align:center;
+    padding:142px 24px 96px; text-align:center;
     background-image:var(--hero-veil);
   }
   .hero-icon{
@@ -76,15 +80,15 @@
     box-shadow:0 24px 60px rgba(79,69,208,.35), 0 4px 14px rgba(0,0,0,.08);
   }
   .eyebrow{
-    font-size:12.5px; font-weight:600; letter-spacing:.16em; text-transform:uppercase;
+    font-size:13px; font-weight:600; letter-spacing:.16em; text-transform:uppercase;
     background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent;
     margin-bottom:18px;
   }
   .hero h1{
-    font-size:clamp(64px,10vw,114px); font-weight:700; letter-spacing:-.015em; line-height:1.04;
+    font-family:var(--serif); font-size:clamp(52px,8vw,90px); font-weight:600; letter-spacing:-.012em; line-height:1.08;
   }
   .hero .tagline{
-    margin-top:14px; font-size:clamp(19px,2.6vw,26px); font-weight:600; letter-spacing:.06em; color:var(--ink);
+    margin-top:16px; font-family:var(--serif); font-size:clamp(18px,2.2vw,23px); font-weight:600; letter-spacing:.14em; color:var(--ink);
   }
   .hero .sub{
     margin:22px auto 0; max-width:640px; font-size:16.5px; line-height:1.8; color:var(--ink-2); text-wrap:pretty;
@@ -103,7 +107,7 @@
   .btn-ghost:hover svg{transform:translateY(2px)}
   .hero-meta{margin-top:22px; font-size:13px; color:var(--ink-2)}
   .hero-shot{
-    max-width:1080px; margin:66px auto 0; position:relative;
+    max-width:1080px; margin:60px auto 0; position:relative;
   }
   .hero-shot .frame{position:relative}
   .hero-shot .frame::after{
@@ -125,14 +129,14 @@
   /* 产品决策：官网不响应 prefers-reduced-motion（动画始终播放） */
 
   /* ── 通用区块 ── */
-  section{padding:110px 24px}
+  section{padding:100px 24px}
   .wrap{max-width:1020px; margin:0 auto}
   .kicker{
-    font-size:13px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+    font-size:13.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
     color:var(--brand-2); margin-bottom:14px;
   }
-  h2{font-size:clamp(30px,4.6vw,46px); font-weight:800; letter-spacing:-.015em; line-height:1.12}
-  .lead{margin-top:18px; font-size:17px; line-height:1.8; color:var(--ink-2); max-width:560px}
+  h2{font-family:var(--serif); font-size:clamp(27px,4vw,41px); font-weight:600; letter-spacing:.004em; line-height:1.24; text-wrap:balance}
+  .lead{margin-top:20px; font-size:17px; line-height:1.85; color:var(--ink-2); max-width:560px}
 
   .split{display:grid; grid-template-columns:1fr 1.22fr; gap:clamp(28px,5vw,72px); align-items:center}
   .split.rev{grid-template-columns:1.22fr 1fr}
@@ -159,38 +163,39 @@
   }
   .darkblock .wrap{position:relative; z-index:1}
   .darkblock .kicker{color:#a99cff}
-  .darkblock .lead, .darkblock .mini-points li{color:#a1a1a6}
+  .darkblock .lead, .darkblock .mini-points li{color:#b4b4bc}
   .darkblock .mini-points b{color:#f5f5f7}
 
   /* ── 特性网格 ── */
-  .grid6{display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:56px}
+  .grid6{display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin-top:52px}
   @media (max-width:860px){ .grid6{grid-template-columns:1fr 1fr} }
   @media (max-width:560px){ .grid6{grid-template-columns:1fr} }
   .feat{
     background:var(--card); border:1px solid var(--line); border-radius:22px;
-    padding:28px 26px; transition:transform .3s cubic-bezier(.34,1.3,.64,1), box-shadow .3s;
+    padding:30px 28px; transition:transform .3s cubic-bezier(.34,1.3,.64,1), box-shadow .3s;
   }
   .feat:hover{transform:translateY(-4px); box-shadow:var(--shadow-md)}
   .feat .ico{
     width:40px; height:40px; border-radius:12px; display:grid; place-items:center;
     background:rgba(99,91,232,.12); color:var(--brand-2); margin-bottom:18px;
   }
-  .feat h3{font-size:16.5px; font-weight:700; margin-bottom:8px}
-  .feat p{font-size:13.5px; line-height:1.7; color:var(--ink-2)}
+  .feat h3{font-size:17px; font-weight:700; margin-bottom:8px}
+  .feat p{font-size:14px; line-height:1.72; color:var(--ink-2)}
   .darkblock .feat{background:rgba(255,255,255,.055); border-color:rgba(255,255,255,.12)}
   .darkblock .feat h3{color:#f5f5f7}
-  .darkblock .feat p{color:#a1a1a6}
+  .darkblock .feat p{color:#b4b4bc}
   .darkblock .feat .ico{background:rgba(125,110,251,.18); color:#b3a7ff}
   .darkblock .frame{border-color:rgba(255,255,255,.16); box-shadow:0 28px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.05)}
 
   /* ── 数字行 ── */
-  .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:56px; text-align:center}
+  .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:28px; margin-top:52px; text-align:center}
   @media (max-width:640px){ .stats{grid-template-columns:1fr} }
   .stat b{
     display:block; font-size:clamp(44px,6vw,64px); font-weight:800; letter-spacing:-.02em;
     background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent;
   }
   .stat > span{display:block; margin-top:8px; font-size:14px; color:var(--ink-2)}
+  .darkblock .stat > span{color:#b4b4bc}
   .stat b .cnt{display:inline; font-size:inherit; color:inherit; letter-spacing:inherit; margin:0}
 
   /* ── 下载区 ── */
@@ -200,24 +205,27 @@
   .dl-links{margin-top:34px; display:flex; gap:28px; justify-content:center; flex-wrap:wrap; font-size:14px}
 
   /* ── 页脚 ── */
-  footer{padding:46px 24px 58px; border-top:1px solid var(--line); font-size:13px; line-height:1.7; color:var(--ink-3)}
+  footer{padding:48px 24px 60px; border-top:1px solid var(--line); font-size:13px; line-height:1.7; color:var(--ink-3)}
   .foot{max-width:1020px; margin:0 auto; display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap}
   .foot a:hover{color:var(--ink); text-decoration:underline; text-underline-offset:3px}
   .foot-l{display:flex; gap:18px; flex-wrap:wrap}
 
   /* ── 滚动显现 ── */
-  html.js .reveal{opacity:0; transform:translateY(38px); filter:blur(8px);
-    transition:opacity .55s ease, transform .75s cubic-bezier(.22,1.28,.36,1), filter .55s ease}
-  html.js .reveal.in{opacity:1; transform:none; filter:blur(0)}
+  html.js .reveal{opacity:0; transform:translateY(26px);
+    transition:opacity .48s ease, transform .62s cubic-bezier(.22,1.28,.36,1)}
+  html.js .reveal.in{opacity:1; transform:none}
+  html.js .hero h1 .ch, html.js .hero-icon.reveal, html.js .shot.reveal, html.js .hero-shot.reveal{
+    filter:blur(10px); transition:opacity .5s ease, transform .7s cubic-bezier(.22,1.28,.36,1), filter .55s ease}
+  html.js .hero h1 .ch.in, html.js .hero-icon.reveal.in, html.js .shot.reveal.in, html.js .hero-shot.reveal.in{filter:blur(0)}
   html.js .d1{transition-delay:.04s}
-  html.js .d2{transition-delay:.11s}
-  html.js .d3{transition-delay:.18s}
-  html.js .d4{transition-delay:.25s}
-  html.js .d5{transition-delay:.32s}
-  html.js .d6{transition-delay:.39s}
-  html.js .d7{transition-delay:.46s}
-  html.js .d8{transition-delay:.53s}
-  html.js .d9{transition-delay:.60s}
+  html.js .d2{transition-delay:.09s}
+  html.js .d3{transition-delay:.14s}
+  html.js .d4{transition-delay:.19s}
+  html.js .d5{transition-delay:.24s}
+  html.js .d6{transition-delay:.29s}
+  html.js .d7{transition-delay:.34s}
+  html.js .d8{transition-delay:.39s}
+  html.js .d9{transition-delay:.44s}
   html.js .hero-icon.reveal:not(.in){transform:translateY(16px) scale(.6)}
   html.js .hero h1 .ch{display:inline-block}
   html.js .hero h1 .ch:not(.in){transform:translateY(54px) scale(.8)}
@@ -388,6 +396,82 @@
   .m-today{font-size:.74em; color:var(--m-t2); opacity:.82; font-weight:500}
   .m-today b{color:var(--m-accent); font-weight:800}
 
+
+  /* ═══════════ 加载骨架（JS 填充前）═══════════ */
+  .m-sk{position:absolute; inset:0; display:flex; background:var(--m-bg)}
+  .m-sk-side{width:20%; background:var(--m-side); border-right:1px solid var(--m-line)}
+  .m-sk-main{flex:1; padding:7% 6.5%; display:flex; flex-direction:column; gap:4.8%}
+  .m-sk-h{height:8%; width:24%; border-radius:.5em; background:var(--m-line); flex:none}
+  .m-sk-r{height:10.5%; border-radius:.5em; background:var(--m-line-2); flex:none}
+  .m-sk-r.s{width:74%}
+
+  /* ═══════════ 手机版（专门排版）═══════════ */
+  @media (max-width:640px){
+    nav{height:52px; padding:0 18px}
+    .nav-cta{font-size:12.5px; padding:7px 14px}
+    .cta-full{display:none}
+    .cta-short{display:inline}
+    .hero{padding:108px 18px 68px}
+    .hero-icon{width:82px; height:82px; border-radius:20px; margin-bottom:20px}
+    .hero h1{font-size:clamp(44px,13vw,58px)}
+    .hero .tagline{font-size:17.5px; letter-spacing:.1em}
+    .hero .sub{font-size:14.5px; line-height:1.75; max-width:315px; margin-top:16px}
+    .cta-row{margin-top:26px; flex-direction:column; gap:10px; align-items:center}
+    .cta-row .btn{width:min(320px,86vw); justify-content:center}
+    .btn{font-size:14.5px; padding:13px 22px}
+    .btn-ghost{width:auto; padding:6px 8px; margin-top:2px}
+    .hero-meta{margin-top:14px; font-size:12.5px}
+    .hero-shot{margin-top:40px}
+    .hero-shot .frame::after{height:64px}
+    section{padding:68px 18px}
+    h2{font-size:clamp(25px,7.6vw,33px)}
+    .kicker{font-size:12px; margin-bottom:10px}
+    .lead{margin-top:14px; font-size:14.5px; line-height:1.78}
+    .split{gap:30px}
+    .mini-points{margin-top:18px; gap:9px}
+    .mini-points li{font-size:13.5px}
+    .frame{border-radius:16px}
+    .stats{gap:24px; margin-top:40px}
+    .stat b{font-size:clamp(32px,9.5vw,42px)}
+    .stat > span{font-size:12.5px}
+    .grid6{gap:12px; margin-top:36px}
+    .feat{padding:20px 18px; border-radius:18px}
+    .feat h3{font-size:15.5px}
+    .feat p{font-size:13px}
+    .download{padding-bottom:72px}
+    .download .hero-icon{width:68px; height:68px; border-radius:17px; margin-bottom:18px}
+    .dl-note{font-size:12.5px}
+    .dl-links{gap:16px; font-size:13px}
+    footer{padding:34px 18px 44px}
+    .foot{flex-direction:column; gap:12px}
+    .dl-modal{padding:18px}
+    .dl-sheet{padding:24px 18px 16px; border-radius:20px}
+    .dl-option{padding:13px 12px; gap:10px}
+    .dl-ico{width:36px; height:36px}
+    /* 活界面：收起侧边栏，放大界面内容（手机可读） */
+    .mini .m-side{display:none}
+    .mini .m-title{display:none}
+    .m-win{font-size:4.2cqw}
+    .m-title{height:2.3em; padding:0 .95em}
+    .m-main{padding:1.05em 1.15em 1.2em}
+    .m-h{font-size:1.6em}
+    .m-sub{font-size:.74em}
+    .m-add{margin-top:.95em; padding:.72em .9em; border-radius:.7em}
+    .m-list{margin-top:.9em; border-radius:.85em}
+    .m-row{padding:.58em .9em; gap:.6em}
+    .m-chip{font-size:.74em}
+    .m-tm{display:none}
+    .m-focus{gap:.95em}
+    .m-ring{width:13.5em; height:13.5em}
+    .m-time{font-size:2.95em}
+    .m-phase{font-size:.8em}
+    .m-ctx{font-size:.64em}
+    .m-dots i{width:.55em; height:.55em}
+    .m-pill{font-size:.75em; padding:.52em 1.2em}
+    .m-presets{display:none}
+    .m-today{display:none}
+  }
+
 </style>
 </head>
 <body>
@@ -400,7 +484,7 @@
     <a href="#quality">品质</a>
     <a href="#download">下载</a>
   </div>
-  <a class="nav-cta js-dl" href="/download/zhaoxi-latest-portable.exe">下载 Windows 版</a>
+  <a class="nav-cta js-dl" href="/download/zhaoxi-latest-portable.exe"><span class="cta-full">下载 Windows 版</span><span class="cta-short">下载</span></a>
 </nav>
 
 <header class="hero" id="top">
@@ -418,7 +502,7 @@
   </div>
   <div class="hero-meta reveal d8">Windows 10 / 11 · 约 5 MB · 免费</div>
   <div class="hero-shot reveal d9">
-    <div class="frame"><div class="mini" data-mini="todos" data-scene="hero" role="img" aria-label="朝夕 待办界面动态演示"></div></div>
+    <div class="frame"><div class="mini" data-mini="todos" data-scene="hero" role="img" aria-label="朝夕 待办界面动态演示"><div class="m-sk" aria-hidden="true"><span class="m-sk-side"></span><span class="m-sk-main"><span class="m-sk-h"></span><span class="m-sk-r"></span><span class="m-sk-r s"></span><span class="m-sk-r"></span><span class="m-sk-r s"></span></span></div></div></div>
   </div>
 </header>
 
@@ -435,7 +519,7 @@
           <li><span class="dot"></span><span><b>拖拽排序 · 删除撤销</b>：操作毫无压力</span></li>
         </ul>
       </div>
-      <div class="shot reveal"><div class="frame"><div class="mini" data-mini="todos" data-scene="features" role="img" aria-label="待办：标签、优先级与截止日动态演示"></div></div></div>
+      <div class="shot reveal"><div class="frame"><div class="mini" data-mini="todos" data-scene="features" role="img" aria-label="待办：标签、优先级与截止日动态演示"><div class="m-sk" aria-hidden="true"><span class="m-sk-side"></span><span class="m-sk-main"><span class="m-sk-h"></span><span class="m-sk-r"></span><span class="m-sk-r s"></span><span class="m-sk-r"></span><span class="m-sk-r s"></span></span></div></div></div></div>
     </div>
   </div>
 </section>
@@ -443,7 +527,7 @@
 <section class="darkblock" id="sync">
   <div class="wrap">
     <div class="split rev">
-      <div class="shot reveal"><div class="frame"><div class="mini" data-mini="todos" data-scene="sync" role="img" aria-label="深色模式与云同步动态演示"></div></div></div>
+      <div class="shot reveal"><div class="frame"><div class="mini" data-mini="todos" data-scene="sync" role="img" aria-label="深色模式与云同步动态演示"><div class="m-sk" aria-hidden="true"><span class="m-sk-side"></span><span class="m-sk-main"><span class="m-sk-h"></span><span class="m-sk-r"></span><span class="m-sk-r s"></span><span class="m-sk-r"></span><span class="m-sk-r s"></span></span></div></div></div></div>
       <div class="txt">
         <div class="kicker reveal d1">云同步 · 可选</div>
         <h2 class="reveal d2">一处记录，<br>处处同步。</h2>
@@ -470,7 +554,7 @@
           <li><span class="dot"></span><span><b>专注统计</b>：每一天的投入，都算数</span></li>
         </ul>
       </div>
-      <div class="shot reveal"><div class="frame"><div class="mini" data-mini="focus" data-scene="focus" role="img" aria-label="番茄钟专注计时动态演示"></div></div></div>
+      <div class="shot reveal"><div class="frame"><div class="mini" data-mini="focus" data-scene="focus" role="img" aria-label="番茄钟专注计时动态演示"><div class="m-sk" aria-hidden="true"><span class="m-sk-side"></span><span class="m-sk-main"><span class="m-sk-h"></span><span class="m-sk-r"></span><span class="m-sk-r s"></span><span class="m-sk-r"></span><span class="m-sk-r s"></span></span></div></div></div></div>
     </div>
   </div>
 </section>
@@ -747,7 +831,7 @@
       };
       const build = () => { list.innerHTML = ''; for (const r of cfg.rows) list.appendChild(rowEl(r)); };
       build(); updCount();
-      await sleep(900);
+      await sleep(700);
       for (;;) {
         const caret = await typeText(addIn, cfg.typeText, 88);
         await sleep(430);
@@ -760,13 +844,13 @@
         addIn.classList.add('empty');
         await sleep(980);
         if (checkRow(list, cfg.checkText)) { count += 1; updCount(); }
-        await sleep(2750);
+        await sleep(2300);
         list.style.opacity = '0';
-        await sleep(520);
+        await sleep(300);
         count = cfg.count0;
         build(); updCount();
         list.style.opacity = '1';
-        await sleep(680);
+        await sleep(420);
       }
     }
 
@@ -793,12 +877,12 @@
         list.appendChild(sweep);
         void sweep.offsetWidth;
         sweep.classList.add('go');
-        await sleep(3300);
+        await sleep(2700);
         list.style.opacity = '0';
-        await sleep(520);
+        await sleep(300);
         list.innerHTML = '';
         list.style.opacity = '1';
-        await sleep(650);
+        await sleep(420);
       }
     }
 
@@ -934,14 +1018,27 @@
       count0: 3, total: 6
     };
 
-    document.querySelectorAll('.mini[data-mini]').forEach((mini) => {
+    const startScene = (mini) => {
       const kind = mini.dataset.mini;
       const scene = mini.dataset.scene;
       if (kind === 'focus') sceneFocus(mini).catch(() => {});
       else if (kind === 'todos' && scene === 'hero') sceneTodos(mini, HERO_CFG).catch(() => {});
       else if (kind === 'todos' && scene === 'features') sceneTodos(mini, FEAT_CFG).catch(() => {});
       else if (kind === 'todos' && scene === 'sync') sceneSync(mini).catch(() => {});
-    });
+    };
+    const minis = [...document.querySelectorAll('.mini[data-mini]')];
+    if ('IntersectionObserver' in window) {
+      const miniIO = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          miniIO.unobserve(e.target);
+          startScene(e.target);   // 首次滚到才启动：每次看到都是完整开场
+        }
+      }, {threshold:.15});
+      minis.forEach((m) => miniIO.observe(m));
+    } else {
+      minis.forEach(startScene);
+    }
   })();
 
 </script>

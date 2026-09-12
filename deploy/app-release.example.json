@@ -1,0 +1,15 @@
+{
+  "latest": "1.1.0",
+  "date": "2026-09-12",
+  "notes": ["此文件放在服务器上与 cloud-config.json 同目录，随发版更新"],
+  "urls": {
+    "china": {
+      "page": "https://你的域名/#download",
+      "portable": "https://你的域名/download/zhaoxi-latest-portable.exe",
+      "setup": "https://你的域名/download/zhaoxi-latest-setup.exe"
+    },
+    "github": {
+      "page": "https://github.com/btrencai/zhaoxi/releases/latest"
+    }
+  }
+}

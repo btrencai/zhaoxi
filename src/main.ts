@@ -2325,52 +2325,92 @@ function bindEvents() {
     els.verLogToggle.setAttribute("aria-expanded", String(show));
     if (show && els.verLog.childElementCount === 0) renderChangelog();
   });
-  els.verCheck.addEventListener("click", async () => {
-    els.verCheck.disabled = true;
-    setVerStatus("正在检查更新…");
+  type RelInfo = { latest: string; date: string; page: string; download: string };
+  const fetchJson = async (url: string, ms: number): Promise<unknown> => {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), ms);
     try {
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 9000);
-      const res = await fetch("https://api.github.com/repos/btrencai/zhaoxi/releases?per_page=10", {
-        headers: { Accept: "application/vnd.github+json" },
-        signal: ctrl.signal,
-      });
-      clearTimeout(timer);
+      const res = await fetch(url, { headers: { Accept: "application/json" }, signal: ctrl.signal });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const list = (await res.json()) as Array<{
+      return await res.json();
+    } finally {
+      clearTimeout(timer);
+    }
+  };
+  // 数据源 ①：官方服务器（国内直达，优先）
+  const checkViaServer = async (): Promise<RelInfo | null> => {
+    const vendor = (__CLOUD_SERVER__ || "").trim();
+    if (!vendor) return null;
+    try {
+      const data = (await fetchJson(`${vendor}/api/app/latest`, 8000)) as {
+        latest?: string;
+        date?: string;
+        urls?: { china?: { page?: string; portable?: string }; github?: { page?: string } };
+      };
+      if (!data || !data.latest) return null;
+      const china = data.urls?.china ?? {};
+      const github = data.urls?.github ?? {};
+      return {
+        latest: String(data.latest),
+        date: String(data.date ?? ""),
+        page: china.page || github.page || "",
+        download: china.portable || china.page || github.page || "",
+      };
+    } catch {
+      return null;
+    }
+  };
+  // 数据源 ②：GitHub Releases（海外兜底）
+  const checkViaGithub = async (): Promise<RelInfo | null> => {
+    try {
+      const list = (await fetchJson("https://api.github.com/repos/btrencai/zhaoxi/releases?per_page=10", 9000)) as Array<{
         draft?: boolean;
-        prerelease?: boolean;
         tag_name?: string;
         html_url?: string;
         published_at?: string;
       }>;
       const release = list.find((r) => !r.draft && r.tag_name);
-      if (!release || !release.tag_name) throw new Error("未找到发布记录");
-      const latest = release.tag_name.replace(/^v/i, "");
-      if (cmpVer(latest, appVersionCache || "0.0.0") > 0) {
+      if (!release || !release.tag_name) return null;
+      const d = release.published_at ? new Date(release.published_at) : null;
+      const date = d
+        ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
+        : "";
+      return {
+        latest: release.tag_name.replace(/^v/i, ""),
+        date,
+        page: release.html_url ?? "",
+        download: release.html_url ?? "",
+      };
+    } catch {
+      return null;
+    }
+  };
+  els.verCheck.addEventListener("click", async () => {
+    els.verCheck.disabled = true;
+    setVerStatus("正在检查更新…");
+    try {
+      const info = (await checkViaServer()) ?? (await checkViaGithub());
+      if (!info) {
+        setVerStatus(`<span class="ver-err">检查失败</span><span>无法连接更新服务器（网络受限或稍后再试）</span>`);
+        return;
+      }
+      if (cmpVer(info.latest, appVersionCache || "0.0.0") > 0) {
         setVerStatus(
-          `<span class="ver-new">发现新版本 v${latest}</span><span>（当前 v${appVersionCache}）</span>` +
+          `<span class="ver-new">发现新版本 v${info.latest}</span><span>（当前 v${appVersionCache}）</span>` +
             `<button class="btn-ghost" id="ver-download" type="button">前往下载</button>`
         );
         document.getElementById("ver-download")?.addEventListener("click", () => {
-          void invoke("open_external", { url: release.html_url }).catch(() =>
+          void invoke("open_external", { url: info.download || info.page }).catch(() =>
             toast("打开链接失败", "error")
           );
         });
       } else {
-        const d = release.published_at ? new Date(release.published_at) : null;
-        const date = d
-          ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
-          : "";
         const hint =
-          cmpVer(latest, appVersionCache || "0.0.0") === 0
-            ? `<span>最近发布：v${latest}${date ? ` · ${date}` : ""}</span>`
+          cmpVer(info.latest, appVersionCache || "0.0.0") === 0
+            ? `<span>最近发布：v${info.latest}${info.date ? ` · ${info.date}` : ""}</span>`
             : "";
         setVerStatus(`<span class="ver-ok">已是最新版本（v${appVersionCache}）✓</span>${hint}`);
       }
-    } catch (err) {
-      setVerStatus(`<span class="ver-err">检查失败</span><span>无法连接 GitHub（网络受限或稍后再试）</span>`);
-      console.warn("检查更新失败：", err);
     } finally {
       els.verCheck.disabled = false;
     }

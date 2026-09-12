@@ -11,6 +11,7 @@
     POST /api/logout                    → { ok }             (Bearer)
     GET  /api/sync?since=<seq>          → { seq, changes }   (Bearer)
     POST /api/sync   {changes}          → { seq }            (Bearer)
+    GET  /api/app/latest               → { ok, latest, date, urls }（应用版本检测）
 
 同步模型：每条记录一个版本（LWW，updatedAt/deletedAt 大者胜），
 服务器为每个用户维护自增 seq，客户端按 cursor 增量拉取。
@@ -107,6 +108,9 @@ CONFIG = {
     "smtp_from": "",
     "dev_echo_code": False,
 }
+
+# 应用版本信息文件（与 cloud-config.json 同目录；发版时更新 app-release.json）
+APP_RELEASE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app-release.json")
 
 # 简易按 IP 限流：{ip: [ts, ...]}，认证类接口 60 次/分钟
 RATE: dict = {}
@@ -357,6 +361,17 @@ class Handler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         if parsed.path == "/api/health":
             return self._send(200, {"ok": True, "name": "zhaoxi-cloud", "version": VERSION})
+        if parsed.path == "/api/app/latest":
+            # 应用版本检测：优先本地 app-release.json（国内直连）；兜底 GitHub；均不可用则 503
+            info = load_app_release()
+            if info:
+                merged = dict(info)
+                merged["source"] = "server"
+                return self._send(200, {"ok": True, **merged})
+            gh = fetch_github_latest()
+            if gh:
+                return self._send(200, {"ok": True, **gh})
+            return self._send(503, {"error": "版本信息暂不可用"})
         if parsed.path == "/api/sync":
             conn = db()
             try:
@@ -626,8 +641,42 @@ class Handler(BaseHTTPRequestHandler):
         return self._send(404, {"error": "未知接口"})
 
 
+def load_app_release():
+    """读取 app-release.json（发版时更新；与配置文件同目录）；不存在或损坏返回 None。"""
+    try:
+        with open(APP_RELEASE_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        if isinstance(data, dict) and data.get("latest"):
+            return data
+    except Exception:
+        pass
+    return None
+
+
+def fetch_github_latest():
+    """兜底：服务端尝试 GitHub Releases API；失败返回 None。"""
+    try:
+        req = urllib.request.Request(
+            "https://api.github.com/repos/btrencai/zhaoxi/releases?per_page=5",
+            headers={"User-Agent": "zhaoxi-cloud", "Accept": "application/vnd.github+json"},
+        )
+        with urllib.request.urlopen(req, timeout=6) as resp:
+            items = json.loads(resp.read().decode("utf-8"))
+        for it in items if isinstance(items, list) else []:
+            if not it.get("draft") and it.get("tag_name"):
+                return {
+                    "latest": str(it["tag_name"]).lstrip("vV"),
+                    "date": str(it.get("published_at") or "")[:10],
+                    "urls": {"github": {"page": it.get("html_url") or ""}},
+                    "source": "github",
+                }
+    except Exception:
+        pass
+    return None
+
+
 def main():
-    global DB_PATH
+    global DB_PATH, APP_RELEASE_FILE
     parser = argparse.ArgumentParser(description="朝夕云同步服务器（开发/自建版）")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8787)
@@ -637,6 +686,7 @@ def main():
     DB_PATH = args.db
 
     cfg_path = args.config or os.path.join(os.path.dirname(os.path.abspath(__file__)), "cloud-config.json")
+    APP_RELEASE_FILE = os.path.join(os.path.dirname(os.path.abspath(cfg_path)), "app-release.json")
     if os.path.exists(cfg_path):
         try:
             loaded = json.load(open(cfg_path, encoding="utf-8"))

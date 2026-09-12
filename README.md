@@ -123,3 +123,14 @@ python cloud-server.py --host 127.0.0.1 --port 8787
 ├── Dockerfile           # 服务端镜像
 └── .github/workflows/   # 自动构建（exe + GHCR 镜像）
 ```
+
+
+## 发版检查清单（国内直连通道）
+
+1. 同步版本号（三处一致）：`src-tauri/tauri.conf.json`、`src-tauri/Cargo.toml`、`package.json`
+2. 更新 `CHANGELOG.md` 与 `src/changelog.ts`（应用内「更新日志」）
+3. 提交推送，打标签发布：`git tag vX.Y.Z && git push origin vX.Y.Z` → 自动构建 exe 并创建 Release
+4. 更新国内直连通道（官方分发必做）：
+   - 新 exe 上传到站点 `download/` 目录（命名保持 `zhaoxi-latest-portable.exe` / `zhaoxi-latest-setup.exe`，覆盖旧文件）
+   - 更新服务器上与 `cloud-config.json` 同目录的 `app-release.json`（版本号 / 日期 / 链接）
+   - 重启云同步服务（重新读取版本信息文件），客户端「检查更新」即指向新版本

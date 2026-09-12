@@ -542,6 +542,36 @@ fn set_tray_visible(app: AppHandle, visible: bool) -> Result<bool, String> {
     }
 }
 
+/// 用系统默认浏览器打开 http/https 链接（仅允许这两种协议，防注入）
+#[tauri::command]
+fn open_external(url: String) -> Result<(), String> {
+    let trimmed = url.trim();
+    if !(trimmed.starts_with("https://") || trimmed.starts_with("http://")) {
+        return Err("仅允许打开 http/https 链接".to_string());
+    }
+    if trimmed.contains('"') || trimmed.contains('\'') || trimmed.contains('&') || trimmed.contains('|') || trimmed.contains(' ') {
+        return Err("链接包含非法字符".to_string());
+    }
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        std::process::Command::new("cmd")
+            .args(["/C", "start", "", trimmed])
+            .creation_flags(0x08000000) // CREATE_NO_WINDOW：避免控制台闪窗
+            .spawn()
+            .map_err(|e| format!("打开链接失败：{e}"))?;
+        Ok(())
+    }
+    #[cfg(not(windows))]
+    {
+        std::process::Command::new("xdg-open")
+            .arg(trimmed)
+            .spawn()
+            .map_err(|e| format!("打开链接失败：{e}"))?;
+        Ok(())
+    }
+}
+
 /// 创建系统托盘：左键单击唤出主窗口；菜单含 打开 / 快速新建 / 退出
 fn setup_tray(app: &tauri::App) -> Result<(), String> {
     let show_item = MenuItem::with_id(app, "show", "打开主界面", true, None::<&str>)
@@ -650,7 +680,8 @@ pub fn run() {
             load_owner,
             save_owner,
             archive_and_clear_data,
-            quit_app
+            quit_app,
+            open_external
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

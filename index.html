@@ -363,6 +363,21 @@
                 <button class="switch" id="set-ontop" type="button" role="switch" aria-checked="false" aria-label="窗口置顶"><i></i></button>
               </div>
             </div>
+            <div class="settings-group card">
+              <div class="settings-group-title">版本与更新</div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <span class="setting-name">当前版本 <span class="ver-tag" id="ver-current">v—</span></span>
+                  <span class="setting-desc">一键检查 GitHub 上的最新发布 · 内置更新日志</span>
+                </div>
+                <div class="ver-actions">
+                  <button class="btn-ghost" id="ver-check" type="button">检查更新</button>
+                  <button class="btn-ghost" id="ver-log-toggle" type="button" aria-expanded="false">更新日志 <span class="ver-caret" aria-hidden="true">▾</span></button>
+                </div>
+              </div>
+              <div class="ver-status" id="ver-status" hidden></div>
+              <div class="ver-log" id="ver-log" hidden></div>
+            </div>
             <p class="settings-note">设置保存在 %APPDATA%\com.simple.todo\settings.json，随改随存。</p>
           </section>
 

@@ -20,6 +20,7 @@ import {
 } from "@tauri-apps/plugin-global-shortcut";
 import { listen } from "@tauri-apps/api/event";
 import { CloudClient, pruneTombstones, type CloudState, type SyncNote, type SyncTodo, type Tombstone } from "./cloud";
+import { CHANGELOG } from "./changelog";
 import "./styles.css";
 
 declare const __TS_VERSION__: string;
@@ -107,6 +108,11 @@ const els = {
   barRef: $id("bar-ref"),
   barAppVal: $id("bar-app-val"),
   copyDiag: $id<HTMLButtonElement>("copy-diag"),
+  verCurrent: $id("ver-current"),
+  verCheck: $id<HTMLButtonElement>("ver-check"),
+  verLogToggle: $id<HTMLButtonElement>("ver-log-toggle"),
+  verStatus: $id("ver-status"),
+  verLog: $id("ver-log"),
   cloudBtn: $id<HTMLButtonElement>("cloud-btn"),
   cloudSettings: $id("cloud-settings"),
   authOverlay: $id("auth-overlay"),
@@ -1441,6 +1447,7 @@ function applyTheme(mode: ThemeMode) {
 
 let appMetaCache: AppMeta | null = null;
 let tauriVersionCache = "";
+let appVersionCache = "";
 
 function buildStackItems(meta: AppMeta | null): StackItem[] {
   const ua = navigator.userAgent;
@@ -2291,6 +2298,84 @@ function bindEvents() {
     }
   });
 
+  // ── 版本与更新 ──
+  const cmpVer = (a: string, b: string): number => {
+    const pa = a.split(".").map((n) => parseInt(n, 10) || 0);
+    const pb = b.split(".").map((n) => parseInt(n, 10) || 0);
+    for (let i = 0; i < Math.max(pa.length, pb.length); i += 1) {
+      const d = (pa[i] ?? 0) - (pb[i] ?? 0);
+      if (d !== 0) return d;
+    }
+    return 0;
+  };
+  const setVerStatus = (html: string) => {
+    els.verStatus.innerHTML = html;
+    els.verStatus.hidden = false;
+  };
+  const renderChangelog = () => {
+    els.verLog.innerHTML = CHANGELOG.map((entry, idx) => {
+      const items = entry.highlights.map((h) => `<li>${h}</li>`).join("");
+      const badge = idx === 0 ? '<span class="ver-latest">最新</span>' : "";
+      return `<div class="ver-item"><div class="ver-head"><b>v${entry.version}</b><span>${entry.date}</span>${badge}</div><ul>${items}</ul></div>`;
+    }).join("");
+  };
+  els.verLogToggle.addEventListener("click", () => {
+    const show = els.verLog.hidden;
+    els.verLog.hidden = !show;
+    els.verLogToggle.setAttribute("aria-expanded", String(show));
+    if (show && els.verLog.childElementCount === 0) renderChangelog();
+  });
+  els.verCheck.addEventListener("click", async () => {
+    els.verCheck.disabled = true;
+    setVerStatus("正在检查更新…");
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 9000);
+      const res = await fetch("https://api.github.com/repos/btrencai/zhaoxi/releases?per_page=10", {
+        headers: { Accept: "application/vnd.github+json" },
+        signal: ctrl.signal,
+      });
+      clearTimeout(timer);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const list = (await res.json()) as Array<{
+        draft?: boolean;
+        prerelease?: boolean;
+        tag_name?: string;
+        html_url?: string;
+        published_at?: string;
+      }>;
+      const release = list.find((r) => !r.draft && r.tag_name);
+      if (!release || !release.tag_name) throw new Error("未找到发布记录");
+      const latest = release.tag_name.replace(/^v/i, "");
+      if (cmpVer(latest, appVersionCache || "0.0.0") > 0) {
+        setVerStatus(
+          `<span class="ver-new">发现新版本 v${latest}</span><span>（当前 v${appVersionCache}）</span>` +
+            `<button class="btn-ghost" id="ver-download" type="button">前往下载</button>`
+        );
+        document.getElementById("ver-download")?.addEventListener("click", () => {
+          void invoke("open_external", { url: release.html_url }).catch(() =>
+            toast("打开链接失败", "error")
+          );
+        });
+      } else {
+        const d = release.published_at ? new Date(release.published_at) : null;
+        const date = d
+          ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
+          : "";
+        const hint =
+          cmpVer(latest, appVersionCache || "0.0.0") === 0
+            ? `<span>最近发布：v${latest}${date ? ` · ${date}` : ""}</span>`
+            : "";
+        setVerStatus(`<span class="ver-ok">已是最新版本（v${appVersionCache}）✓</span>${hint}`);
+      }
+    } catch (err) {
+      setVerStatus(`<span class="ver-err">检查失败</span><span>无法连接 GitHub（网络受限或稍后再试）</span>`);
+      console.warn("检查更新失败：", err);
+    } finally {
+      els.verCheck.disabled = false;
+    }
+  });
+
   // 云端同步
   els.cloudBtn.addEventListener("click", () => {
     if (cloud.current.account) {
@@ -2511,7 +2596,11 @@ async function init() {
     getTauriVersion().catch(() => ""),
     invoke<AppMeta>("app_meta").catch(() => null),
   ]);
-  if (appVersion) els.appVersion.textContent = `v${appVersion}`;
+  if (appVersion) {
+    appVersionCache = appVersion;
+    els.appVersion.textContent = `v${appVersion}`;
+    els.verCurrent.textContent = `v${appVersion}`;
+  }
   if (tauriVersion) {
     tauriVersionCache = tauriVersion;
     els.stackChip.textContent = `Tauri ${tauriVersion} · Rust`;

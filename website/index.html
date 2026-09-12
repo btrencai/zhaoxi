@@ -271,6 +271,123 @@
   .dl-option:hover .dl-arrow{transform:translateY(3px)}
   .dl-foot{margin:16px 0 0;font-size:11.5px;line-height:1.7;color:var(--ink-3)}
   .dl-foot a{color:var(--brand-2);text-decoration:none}
+
+  /* ═══════════ 活的界面演示（Live mini apps）═══════════ */
+  .mini{position:relative; width:100%; aspect-ratio:1120/760; overflow:hidden; container-type:inline-size;
+    --m-bg:#f7f7fb; --m-side:#f4f4f9; --m-card:#ffffff; --m-line:#e8e8f0; --m-line-2:#efeff5;
+    --m-t1:#1f2937; --m-t2:#6b7280; --m-t3:#9ca3af;
+    --m-accent:#6c5ce7; --m-accent-2:#8b5cf6; --m-accent-soft:#ecebff;
+    --m-tag-bg:#f3f4f6; --m-tag-tx:#6b7280; --m-hover:#f8f8fc;
+    --m-ring-track:rgba(108,92,231,.2); --m-dot-empty:#e4e4ee; --m-ck:#d1d5db;
+    background:var(--m-bg)}
+  @media (prefers-color-scheme: dark){ .mini{
+    --m-bg:#0a0a0f; --m-side:#111118; --m-card:#121218; --m-line:rgba(255,255,255,.09); --m-line-2:rgba(255,255,255,.06);
+    --m-t1:#f5f5f7; --m-t2:#a3abb8; --m-t3:#8a93a3;
+    --m-accent:#8b5cf6; --m-accent-2:#a78bfa; --m-accent-soft:rgba(139,92,246,.2);
+    --m-tag-bg:#2a2f37; --m-tag-tx:#9aa3b2; --m-hover:#1a1a22;
+    --m-ring-track:rgba(255,255,255,.13); --m-dot-empty:rgba(255,255,255,.15); --m-ck:#4a4f5a }}
+  .darkblock .mini{
+    --m-bg:#0a0a0f; --m-side:#111118; --m-card:#121218; --m-line:rgba(255,255,255,.09); --m-line-2:rgba(255,255,255,.06);
+    --m-t1:#f5f5f7; --m-t2:#a3abb8; --m-t3:#8a93a3;
+    --m-accent:#8b5cf6; --m-accent-2:#a78bfa; --m-accent-soft:rgba(139,92,246,.2);
+    --m-tag-bg:#2a2f37; --m-tag-tx:#9aa3b2; --m-hover:#1a1a22;
+    --m-ring-track:rgba(255,255,255,.1); --m-dot-empty:rgba(255,255,255,.14); --m-ck:#4a4f5a }
+  .m-win{width:100%; height:100%; display:flex; flex-direction:column; font-size:16px; font-size:1.42cqw;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    color:var(--m-t1); background:var(--m-bg); user-select:none}
+  .m-title{flex:none; display:flex; align-items:center; justify-content:space-between; height:2.5em; padding:0 1.05em; border-bottom:1px solid var(--m-line)}
+  .m-tl{display:flex; align-items:center; gap:.55em; font-size:.8em; font-weight:700}
+  .m-tl em{font-style:normal; color:var(--m-t3); font-weight:600; font-size:.85em; margin-left:.15em}
+  .m-logo{width:1.15em; height:1.15em; border-radius:.36em; background:linear-gradient(135deg,#8b7bff,#5b4fd8); position:relative; box-shadow:0 .18em .5em rgba(91,79,216,.35); display:block; flex:none}
+  .m-logo::after{content:""; position:absolute; inset:30%; border-radius:50%; border:.12em solid #fff}
+  .m-tc{display:flex; gap:1.05em; color:var(--m-t3)}
+  .m-tc svg{width:.85em; height:.85em; display:block}
+  .m-body{flex:1; display:flex; min-height:0}
+  .m-side{width:20%; flex:none; background:var(--m-side); border-right:1px solid var(--m-line); padding:1.3em .8em .9em; display:flex; flex-direction:column; gap:.2em; overflow:hidden}
+  .m-brand{display:flex; align-items:center; gap:.55em; margin:0 0 1.05em; padding:0 .35em}
+  .m-brand .m-logo{width:1.8em; height:1.8em; border-radius:.5em}
+  .m-brand .m-logo::after{border-width:.15em}
+  .m-brand b{font-size:.92em; font-weight:800; display:block}
+  .m-brand span{display:block; font-size:.58em; color:var(--m-t3); margin-top:.25em; font-weight:500; white-space:nowrap}
+  .m-nav{display:flex; flex-direction:column; gap:.12em}
+  .m-nav span{display:flex; align-items:center; gap:.62em; padding:.48em .65em; border-radius:.55em; font-size:.84em; font-weight:500; color:var(--m-t2); white-space:nowrap}
+  .m-nav svg{width:1.05em; height:1.05em; flex:none; display:block}
+  .m-nav span.on{background:var(--m-accent-soft); color:var(--m-accent); font-weight:700}
+  .m-side-foot{margin-top:auto; font-size:.65em; color:var(--m-t3); padding:.4em .5em 0; font-weight:500; white-space:nowrap}
+  .m-main{flex:1; min-width:0; display:flex; flex-direction:column; padding:1.35em 1.6em 1.5em}
+  .m-head{display:flex; align-items:flex-end; justify-content:space-between; gap:1em; flex:none}
+  .m-h{font-size:1.42em; font-weight:800; letter-spacing:-.015em}
+  .m-sub{font-size:.76em; color:var(--m-t3); margin-top:.3em; font-weight:500}
+  .m-prog{display:flex; flex-direction:column; align-items:flex-end}
+  .m-prog .m-plabel{font-size:.68em; color:var(--m-t3); font-weight:500}
+  .m-prog .m-pnum{font-size:1.26em; font-weight:800; margin-top:.1em; font-variant-numeric:tabular-nums}
+  .m-prog .m-pnum b{color:var(--m-accent)}
+  .m-prog .m-pnum i{font-style:normal; color:var(--m-t2)}
+  .m-bar{width:9.5em; height:.3em; margin-top:.5em; border-radius:99em; background:var(--m-line); overflow:hidden}
+  .m-bar i{display:block; height:100%; border-radius:99em; background:linear-gradient(90deg,var(--m-accent-2),var(--m-accent)); width:66%; transition:width .85s cubic-bezier(.22,1,.36,1)}
+  .m-add{flex:none; margin-top:1.15em; display:flex; align-items:center; gap:.7em; background:var(--m-card); border:1px solid var(--m-line); border-radius:.75em; padding:.8em 1em; box-shadow:0 1px 2px rgba(20,20,60,.04)}
+  .m-add .m-plus{color:var(--m-t3); font-size:1.05em; font-weight:600; line-height:1}
+  .m-add .m-in{flex:1; font-size:.88em; min-height:1.25em; color:var(--m-t1); white-space:nowrap; overflow:hidden; font-weight:500}
+  .m-add .m-in.empty{color:var(--m-t3); font-weight:400}
+  .m-add .m-btn{flex:none; font-size:.8em; font-weight:700; color:#fff; background:var(--m-accent); padding:.5em 1.25em; border-radius:.55em; transition:transform .3s cubic-bezier(.34,1.5,.64,1), box-shadow .3s}
+  .m-add .m-btn.pulse{transform:scale(1.12); box-shadow:0 0 0 .5em var(--m-accent-soft)}
+  .caret{display:inline-block; width:.09em; height:1.1em; background:var(--m-accent); vertical-align:-.18em; margin-left:.06em; border-radius:1px; animation:caretBlink 1.06s steps(1) infinite}
+  @keyframes caretBlink{0%,54%{opacity:1}55%,100%{opacity:0}}
+  .m-list{flex:1; min-height:0; margin-top:1.05em; background:var(--m-card); border:1px solid var(--m-line); border-radius:.95em; overflow:hidden; position:relative; transition:opacity .45s ease; padding:.3em 0}
+  .m-row{display:flex; align-items:center; gap:.72em; padding:.6em 1.05em; position:relative; border-bottom:1px solid var(--m-line-2)}
+  .m-list > *:last-child .m-row{border-bottom:none}
+  .m-list > .m-row:last-child{border-bottom:none}
+  .m-row .m-flash{position:absolute; inset:0; background:var(--m-hover); opacity:0; pointer-events:none}
+  .m-row.hl .m-flash{animation:rowHl 1.1s ease}
+  @keyframes rowHl{0%{opacity:1}100%{opacity:0}}
+  .m-check{width:1.12em; height:1.12em; flex:none; display:block}
+  .m-check svg{width:100%; height:100%; display:block; overflow:visible}
+  .m-check circle{fill:transparent; stroke:var(--m-ck); stroke-width:1.9; transition:fill .32s ease, stroke .32s ease; transform-origin:center}
+  .m-check path{fill:none; stroke:#fff; stroke-width:2.3; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:1; stroke-dashoffset:1; transition:stroke-dashoffset .3s ease .1s}
+  .m-row.done .m-check circle{fill:var(--m-accent); stroke:var(--m-accent); animation:ckPop .45s cubic-bezier(.34,1.6,.64,1)}
+  @keyframes ckPop{0%{transform:scale(.72)}60%{transform:scale(1.14)}100%{transform:scale(1)}}
+  .m-row.done .m-check path{stroke-dashoffset:0}
+  .m-dot{width:.46em; height:.46em; border-radius:50%; background:#d1d5db; flex:none}
+  .m-tx{flex:1; font-size:.88em; color:var(--m-t1); font-weight:500; position:relative; transition:color .45s ease; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .m-tx::after{content:""; position:absolute; left:0; right:0; top:54%; height:1px; background:var(--m-t3); transform:scaleX(0); transform-origin:left center; transition:transform .42s cubic-bezier(.22,1,.36,1) .12s}
+  .m-row.done .m-tx{color:var(--m-t3)}
+  .m-row.done .m-tx::after{transform:scaleX(1)}
+  .m-chip{flex:none; font-size:.7em; font-weight:600; color:var(--m-tag-tx); background:var(--m-tag-bg); padding:.3em .75em; border-radius:99em}
+  .m-tm{flex:none; font-size:.7em; color:var(--m-t3); font-weight:500}
+  .m-insert{max-height:0; opacity:0; overflow:hidden; transform:translateY(-.5em); transition:max-height .55s cubic-bezier(.22,1,.36,1), opacity .4s ease, transform .55s cubic-bezier(.22,1,.36,1)}
+  .m-insert.in{max-height:3.6em; opacity:1; transform:none}
+  .m-sync{display:inline-flex; align-items:center; gap:.5em; font-size:.72em; font-weight:600; color:var(--m-t2); background:var(--m-card); border:1px solid var(--m-line); padding:.45em .85em; border-radius:99em; flex:none}
+  .m-sync i{width:.42em; height:.42em; border-radius:50%; background:#34c759; animation:syncPulse 2.4s ease-out infinite}
+  @keyframes syncPulse{0%{box-shadow:0 0 0 0 rgba(52,199,89,.5)}70%{box-shadow:0 0 0 .45em rgba(52,199,89,0)}100%{box-shadow:0 0 0 0 rgba(52,199,89,0)}}
+  .m-sweep{position:absolute; inset:0; pointer-events:none; opacity:0; background:linear-gradient(180deg, transparent 20%, rgba(139,92,246,.1) 50%, transparent 80%)}
+  .m-sweep.go{animation:sweepDown 1.4s ease}
+  @keyframes sweepDown{0%{opacity:0; transform:translateY(-70%)}30%{opacity:1}100%{opacity:0; transform:translateY(70%)}}
+  /* 专注视图 */
+  .m-focus{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1.55em; min-height:0; transition:opacity .5s ease}
+  .m-ring{position:relative; width:21.5em; height:21.5em; flex:none}
+  .m-ring > svg{width:100%; height:100%; display:block}
+  .m-ring .track{fill:none; stroke:var(--m-ring-track); stroke-width:7}
+  .m-ring .fill{fill:none; stroke:url(#mgrad); stroke-width:7; stroke-linecap:round; filter:drop-shadow(0 0 6px rgba(139,92,246,.5))}
+  .m-ring::after{content:""; position:absolute; inset:-2.5%; border-radius:50%; border:2px solid var(--m-accent-2); opacity:0; pointer-events:none}
+  .m-ring.flash::after{animation:ringPulse .9s ease-out}
+  @keyframes ringPulse{0%{opacity:.65; transform:scale(1)}100%{opacity:0; transform:scale(1.07)}}
+  .m-center{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.5em}
+  .m-time{font-size:4.15em; font-weight:800; letter-spacing:.005em; font-variant-numeric:tabular-nums; line-height:1}
+  .m-phase{font-size:1em; font-weight:600; color:var(--m-t2); letter-spacing:.08em; transition:color .4s}
+  .m-ctx{font-size:.74em; color:var(--m-t3); font-weight:500}
+  .m-dots{display:flex; gap:.55em}
+  .m-dots i{width:.64em; height:.64em; border-radius:50%; background:var(--m-dot-empty); transition:background .35s ease, transform .35s cubic-bezier(.34,1.5,.64,1)}
+  .m-dots i.on{background:var(--m-accent); transform:scale(1.18)}
+  .m-rbtns{display:flex; gap:.9em}
+  .m-pill{font-size:.9em; font-weight:700; padding:.68em 1.7em; border-radius:.62em}
+  .m-pill.fill{color:#fff; background:var(--m-accent)}
+  .m-pill.ghost{color:var(--m-t2); border:1px solid var(--m-line); font-weight:600}
+  .m-presets{display:flex; gap:.6em}
+  .m-pre{font-size:.78em; font-weight:600; color:var(--m-t2); border:1px solid var(--m-line); padding:.45em 1em; border-radius:99em}
+  .m-pre.on{color:var(--m-accent); border-color:var(--m-accent); background:var(--m-accent-soft)}
+  .m-today{font-size:.74em; color:var(--m-t2); opacity:.82; font-weight:500}
+  .m-today b{color:var(--m-accent); font-weight:800}
+
 </style>
 </head>
 <body>
@@ -301,7 +418,7 @@
   </div>
   <div class="hero-meta reveal d8">Windows 10 / 11 · 约 5 MB · 免费</div>
   <div class="hero-shot reveal d9">
-    <div class="frame"><img src="assets/shot-todos-light.png" alt="朝夕 待办界面"></div>
+    <div class="frame"><div class="mini" data-mini="todos" data-scene="hero" role="img" aria-label="朝夕 待办界面动态演示"></div></div>
   </div>
 </header>
 
@@ -318,7 +435,7 @@
           <li><span class="dot"></span><span><b>拖拽排序 · 删除撤销</b>：操作毫无压力</span></li>
         </ul>
       </div>
-      <div class="shot reveal"><div class="frame"><img src="assets/shot-todos-light.png" alt="待办列表"></div></div>
+      <div class="shot reveal"><div class="frame"><div class="mini" data-mini="todos" data-scene="features" role="img" aria-label="待办：标签、优先级与截止日动态演示"></div></div></div>
     </div>
   </div>
 </section>
@@ -326,7 +443,7 @@
 <section class="darkblock" id="sync">
   <div class="wrap">
     <div class="split rev">
-      <div class="shot reveal"><div class="frame"><img src="assets/shot-todos-dark.png" alt="深色模式待办"></div></div>
+      <div class="shot reveal"><div class="frame"><div class="mini" data-mini="todos" data-scene="sync" role="img" aria-label="深色模式与云同步动态演示"></div></div></div>
       <div class="txt">
         <div class="kicker reveal d1">云同步 · 可选</div>
         <h2 class="reveal d2">一处记录，<br>处处同步。</h2>
@@ -353,7 +470,7 @@
           <li><span class="dot"></span><span><b>专注统计</b>：每一天的投入，都算数</span></li>
         </ul>
       </div>
-      <div class="shot reveal"><div class="frame"><img src="assets/shot-focus.png" alt="专注计时"></div></div>
+      <div class="shot reveal"><div class="frame"><div class="mini" data-mini="focus" data-scene="focus" role="img" aria-label="番茄钟专注计时动态演示"></div></div></div>
     </div>
   </div>
 </section>
@@ -518,6 +635,315 @@
   document.getElementById('dl-close').addEventListener('click', closeDl);
   dlModal.addEventListener('click', (e) => { if (e.target === dlModal) closeDl(); });
   window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !dlModal.hidden) closeDl(); });
+
+  // ═══════════════ 活的界面演示（Live mini apps）═══════════════
+  (() => {
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    const S = (p) => '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' + p + '</svg>';
+    const ICONS = {
+      todo: S('<rect x="3.4" y="3.4" width="13.2" height="13.2" rx="3.2"/><path d="M7 10.3l2.1 2.1 3.9-4.4"/>'),
+      note: S('<path d="M4.6 3.6h10.8v9.2l-3.6 3.6H4.6z"/><path d="M15.4 12.8h-3.6v3.6"/>'),
+      focus: S('<circle cx="10" cy="10.6" r="6.2"/><path d="M10 7.2v3.6l2.3 2.1"/>'),
+      clip: S('<rect x="4.8" y="5.2" width="10.4" height="11.6" rx="2.6"/><path d="M8.1 5.2v-.7a1.9 1.9 0 0 1 3.8 0v.7"/>'),
+      chart: S('<path d="M4.2 16V9.2M8.7 16V5.6M13.2 16v-4.4M17.4 16V7.6"/>'),
+      gear: S('<circle cx="10" cy="10" r="2.5"/><path d="M10 3.4v1.9M10 14.7v1.9M3.4 10h1.9M14.7 10h1.9M5.3 5.3l1.3 1.3M13.4 13.4l1.3 1.3M14.7 5.3l-1.3 1.3M6.6 13.4l-1.3 1.3"/>')
+    };
+    const CTRL =
+      '<svg viewBox="0 0 12 12"><path d="M2.4 6h7.2" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>' +
+      '<svg viewBox="0 0 12 12"><rect x="2.6" y="2.6" width="6.8" height="6.8" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>' +
+      '<svg viewBox="0 0 12 12"><path d="M3.1 3.1l5.8 5.8M8.9 3.1l-5.8 5.8" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
+    const NAVS = [['todo', '待办事项'], ['note', '便签'], ['focus', '专注'], ['clip', '剪贴板'], ['chart', '统计'], ['gear', '设置']];
+    const CHECK = '<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.3"/><path pathLength="1" d="M6.5 10.4l2.3 2.3 4.7-5.1"/></svg>';
+    const CIRC = 2 * Math.PI * 104;
+    const pad = (n) => String(n).padStart(2, '0');
+
+    const h = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; };
+    const qs = (el, sel) => el.querySelector(sel);
+
+    function chrome(mini, active) {
+      mini.innerHTML = '';
+      const win = h('div', 'm-win');
+      win.appendChild(h('div', 'm-title',
+        '<span class="m-tl"><span class="m-logo"></span>朝夕<em>v1.2.0</em></span>' +
+        '<span class="m-tc">' + CTRL + '</span>'));
+      const body = h('div', 'm-body');
+      const side = h('div', 'm-side');
+      side.appendChild(h('div', 'm-brand', '<span class="m-logo"></span><div><b>朝夕</b><span>朝有所为 · 夕有所成</span></div>'));
+      const nav = h('div', 'm-nav');
+      for (const [ic, label] of NAVS) nav.appendChild(h('span', label === active ? 'on' : '', ICONS[ic] + label));
+      side.appendChild(nav);
+      side.appendChild(h('div', 'm-side-foot', 'Tauri 2 · Rust'));
+      body.appendChild(side);
+      const main = h('div', 'm-main');
+      body.appendChild(main);
+      win.appendChild(body);
+      mini.appendChild(win);
+      return { main };
+    }
+
+    function rowEl(r) {
+      const row = h('div', 'm-row');
+      row.innerHTML = '<span class="m-flash"></span><span class="m-check">' + CHECK + '</span>' +
+        (r.dot ? '<span class="m-dot" style="background:' + r.dot + '"></span>' : '') +
+        '<span class="m-tx"></span>' +
+        (r.tag ? '<span class="m-chip">' + r.tag + '</span>' : '') +
+        (r.tm ? '<span class="m-tm">' + r.tm + '</span>' : '');
+      qs(row, '.m-tx').textContent = r.t;
+      return row;
+    }
+
+    async function typeText(inEl, text, speed) {
+      inEl.classList.remove('empty');
+      inEl.textContent = '';
+      const caret = h('span', 'caret');
+      inEl.appendChild(caret);
+      for (const ch of text) { caret.insertAdjacentText('beforebegin', ch); await sleep(speed + Math.random() * 30); }
+      return caret;
+    }
+
+    function insertRow(list, row) {
+      const wrap = h('div', 'm-insert');
+      wrap.appendChild(row);
+      list.insertBefore(wrap, list.firstChild);
+      void wrap.offsetWidth;
+      wrap.classList.add('in');
+      setTimeout(() => { wrap.replaceWith(row); }, 680);
+    }
+
+    function checkRow(list, text) {
+      const row = [...list.querySelectorAll('.m-row')].find((r) => qs(r, '.m-tx').textContent === text);
+      if (!row) return null;
+      row.classList.add('hl');
+      setTimeout(() => row.classList.add('done'), 140);
+      return row;
+    }
+
+    function todosChrome(mini, opt) {
+      const { main } = chrome(mini, '待办事项');
+      opt = opt || {};
+      main.appendChild(h('div', 'm-head',
+        '<div><div class="m-h">' + (opt.title || '待办事项') + '</div><div class="m-sub">' + (opt.sub || '今天 · 9月12日 周六') + '</div></div>' +
+        (opt.sync
+          ? '<span class="m-sync"><i></i>已同步 · 刚刚</span>'
+          : '<div class="m-prog"><span class="m-plabel">已完成</span><span class="m-pnum"><b>0</b><i> / 0</i></span><span class="m-bar"><i></i></span></div>')));
+      main.appendChild(h('div', 'm-add',
+        '<span class="m-plus">＋</span><span class="m-in empty">添加一项待办，回车确认 · 支持 #标签</span><span class="m-btn">添加</span>'));
+      const list = h('div', 'm-list');
+      main.appendChild(list);
+      return { main, list };
+    }
+
+    async function sceneTodos(mini, cfg) {
+      const { list } = todosChrome(mini, cfg.head);
+      const win = qs(mini, '.m-win');
+      const addIn = qs(win, '.m-in');
+      const addBtn = qs(win, '.m-btn');
+      const pnum = qs(win, '.m-pnum');
+      const bar = qs(win, '.m-bar i');
+      let count = cfg.count0;
+      const updCount = () => {
+        if (pnum) pnum.innerHTML = '<b>' + count + '</b><i> / ' + cfg.total + '</i>';
+        if (bar) bar.style.width = Math.round((count / cfg.total) * 100) + '%';
+      };
+      const build = () => { list.innerHTML = ''; for (const r of cfg.rows) list.appendChild(rowEl(r)); };
+      build(); updCount();
+      await sleep(900);
+      for (;;) {
+        const caret = await typeText(addIn, cfg.typeText, 88);
+        await sleep(430);
+        addBtn.classList.add('pulse');
+        await sleep(280);
+        addBtn.classList.remove('pulse');
+        insertRow(list, rowEl(cfg.newRow));
+        caret.remove();
+        addIn.textContent = '';
+        addIn.classList.add('empty');
+        await sleep(980);
+        if (checkRow(list, cfg.checkText)) { count += 1; updCount(); }
+        await sleep(2750);
+        list.style.opacity = '0';
+        await sleep(520);
+        count = cfg.count0;
+        build(); updCount();
+        list.style.opacity = '1';
+        await sleep(680);
+      }
+    }
+
+    async function sceneSync(mini) {
+      const { list } = todosChrome(mini, { sub: '来自「工作室台式机」的同步', sync: true });
+      const ROWS = [
+        { t: '完成本周产品周报并归档', tag: '#工作', tm: '刚刚' },
+        { t: '整理需求文档 v2', tag: '#工作', tm: '刚刚' },
+        { t: '预约周五的牙医', tag: '#生活', tm: '刚刚' }
+      ];
+      for (;;) {
+        list.innerHTML = '';
+        const wraps = [];
+        for (const r of ROWS) { const w = h('div', 'm-insert'); w.appendChild(rowEl(r)); list.appendChild(w); wraps.push(w); }
+        await sleep(160);
+        for (const w of wraps) { w.classList.add('in'); await sleep(340); }
+        await sleep(820);
+        const first = qs(wraps[0], '.m-row');
+        first.classList.add('hl');
+        await sleep(140);
+        first.classList.add('done');
+        await sleep(720);
+        const sweep = h('span', 'm-sweep');
+        list.appendChild(sweep);
+        void sweep.offsetWidth;
+        sweep.classList.add('go');
+        await sleep(3300);
+        list.style.opacity = '0';
+        await sleep(520);
+        list.innerHTML = '';
+        list.style.opacity = '1';
+        await sleep(650);
+      }
+    }
+
+    async function sceneFocus(mini) {
+      const { main } = chrome(mini, '专注');
+      const wrap = h('div', 'm-focus');
+      wrap.innerHTML =
+        '<div class="m-ring"><svg viewBox="0 0 240 240">' +
+        '<defs><linearGradient id="mgrad" x1="26" y1="26" x2="214" y2="214" gradientUnits="userSpaceOnUse">' +
+        '<stop offset="0" style="stop-color:var(--m-accent-2)"/><stop offset="1" style="stop-color:var(--m-accent)"/></linearGradient></defs>' +
+        '<circle class="track" cx="120" cy="120" r="104" transform="rotate(-90 120 120)"/>' +
+        '<circle class="fill" cx="120" cy="120" r="104" transform="rotate(-90 120 120)"/>' +
+        '<circle class="enddot" cx="120" cy="16" r="6.5" fill="var(--m-accent-2)"/>' +
+        '</svg>' +
+        '<div class="m-center"><span class="m-time">25:00</span><span class="m-phase">专注时间</span><span class="m-ctx">第 1 个番茄 · 每 4 个番茄后长休息</span></div></div>' +
+        '<div class="m-dots"><i></i><i></i><i></i><i></i></div>' +
+        '<div class="m-rbtns"><span class="m-pill fill">暂停</span><span class="m-pill ghost">重置</span></div>' +
+        '<div class="m-presets"><span class="m-pre on">25 分钟</span><span class="m-pre">15 分钟</span><span class="m-pre">45 分钟</span></div>' +
+        '<div class="m-today">今日已完成 <b>0</b> 个番茄</div>';
+      main.appendChild(wrap);
+      const ring = qs(wrap, '.m-ring');
+      const fillC = qs(wrap, '.fill');
+      const dot = qs(wrap, '.enddot');
+      const timeEl = qs(wrap, '.m-time');
+      const phaseEl = qs(wrap, '.m-phase');
+      const ctxEl = qs(wrap, '.m-ctx');
+      const dotsEls = [...wrap.querySelectorAll('.m-dots i')];
+      const todayEl = qs(wrap, '.m-today');
+      fillC.style.strokeDasharray = String(CIRC);
+
+      const setRing = (remainFrac) => {
+        fillC.style.strokeDashoffset = String(CIRC * (1 - remainFrac));
+        const a = -Math.PI / 2 + Math.PI * 2 * remainFrac;
+        dot.setAttribute('cx', String((120 + 104 * Math.cos(a)).toFixed(2)));
+        dot.setAttribute('cy', String((120 + 104 * Math.sin(a)).toFixed(2)));
+      };
+      const run = (durMs, totalSec) => new Promise((done) => {
+        const t0 = performance.now();
+        let lastTick = 0;
+        let lastMin = -1;
+        const step = (t) => {
+          const p = Math.min(1, (t - t0) / durMs);
+          const remain = (1 - p) * totalSec;
+          setRing(1 - p);
+          if (t - lastTick > 340) {
+            lastTick = t;
+            const m = Math.max(0, Math.round(remain / 60));
+            if (m !== lastMin) { lastMin = m; timeEl.textContent = pad(m) + ':00'; }
+          }
+          if (p < 1) requestAnimationFrame(step); else { timeEl.textContent = '00:00'; done(); }
+        };
+        requestAnimationFrame(step);
+      });
+      const resetRingFull = () => {
+        fillC.style.transition = 'none';
+        setRing(1);
+        void fillC.getBoundingClientRect();
+        fillC.style.transition = '';
+      };
+      let roundDone = 0;
+      await sleep(600);
+      for (;;) {
+        // ── 专注
+        phaseEl.textContent = '专注时间';
+        ctxEl.textContent = '第 ' + (roundDone + 1) + ' 个番茄 · 每 4 个番茄后长休息';
+        timeEl.textContent = '25:00';
+        resetRingFull();
+        await sleep(620);
+        await run(8600, 1500);
+        ring.classList.add('flash');
+        await sleep(760);
+        ring.classList.remove('flash');
+        roundDone += 1;
+        if (roundDone <= 4) dotsEls[roundDone - 1].classList.add('on');
+        todayEl.innerHTML = '今日已完成 <b>' + roundDone + '</b> 个番茄';
+        // ── 短休
+        phaseEl.textContent = '短休息';
+        ctxEl.textContent = '起来活动一下';
+        timeEl.textContent = '05:00';
+        resetRingFull();
+        await sleep(500);
+        await run(3300, 300);
+        // ── 回到专注（第二轮，加速演示）
+        phaseEl.textContent = '专注时间';
+        ctxEl.textContent = '第 ' + (roundDone + 1) + ' 个番茄 · 每 4 个番茄后长休息';
+        timeEl.textContent = '25:00';
+        resetRingFull();
+        await sleep(450);
+        await run(4200, 1500);
+        ring.classList.add('flash');
+        await sleep(700);
+        ring.classList.remove('flash');
+        // ── 收尾重置
+        wrap.style.opacity = '0';
+        await sleep(560);
+        roundDone = 0;
+        dotsEls.forEach((d) => d.classList.remove('on'));
+        todayEl.innerHTML = '今日已完成 <b>0</b> 个番茄';
+        phaseEl.textContent = '专注时间';
+        ctxEl.textContent = '第 1 个番茄 · 每 4 个番茄后长休息';
+        timeEl.textContent = '25:00';
+        resetRingFull();
+        await sleep(140);
+        wrap.style.opacity = '1';
+        await sleep(680);
+      }
+    }
+
+    const HERO_CFG = {
+      head: {},
+      rows: [
+        { t: '读《设计中的设计》第三章', tag: '#阅读', tm: '9/10 21:12' },
+        { t: '完成本周产品周报并归档', tag: '#工作', tm: '今天 11:08', dot: '#f59e0b' },
+        { t: '背 20 个单词', tag: '#学习', tm: '今天', dot: '#3b82f6' },
+        { t: '给阳台的绿植换盆', tag: '#生活', tm: '9/3 20:13' }
+      ],
+      typeText: '预约周五的牙医',
+      newRow: { t: '预约周五的牙医', tag: '#生活', tm: '今天' },
+      checkText: '读《设计中的设计》第三章',
+      count0: 6, total: 9
+    };
+    const FEAT_CFG = {
+      head: { sub: '标签 · 优先级 · 截止日，一眼看清' },
+      rows: [
+        { t: '设计评审改期到周三 14:00', tag: '#设计', tm: '周三 14:00', dot: '#ef4444' },
+        { t: '二季度 OKR 复盘会准备', tag: '#工作', tm: '周四', dot: '#f59e0b' },
+        { t: '给新版本设计一张发布海报', tag: '#设计', tm: '明天', dot: '#3b82f6' },
+        { t: '更新个人简历', tag: '#工作', tm: '9/7 20:12' }
+      ],
+      typeText: '整理需求文档 v2',
+      newRow: { t: '整理需求文档 v2', tag: '#工作', tm: '今天' },
+      checkText: '设计评审改期到周三 14:00',
+      count0: 3, total: 6
+    };
+
+    document.querySelectorAll('.mini[data-mini]').forEach((mini) => {
+      const kind = mini.dataset.mini;
+      const scene = mini.dataset.scene;
+      if (kind === 'focus') sceneFocus(mini).catch(() => {});
+      else if (kind === 'todos' && scene === 'hero') sceneTodos(mini, HERO_CFG).catch(() => {});
+      else if (kind === 'todos' && scene === 'features') sceneTodos(mini, FEAT_CFG).catch(() => {});
+      else if (kind === 'todos' && scene === 'sync') sceneSync(mini).catch(() => {});
+    });
+  })();
+
 </script>
 </body>
 </html>

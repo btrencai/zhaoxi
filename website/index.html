@@ -252,6 +252,8 @@
   @media (prefers-color-scheme: dark){ .aurora i{opacity:.32} }
   /* 下载选择弹层 */
   .dl-modal{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(18,18,26,.44);backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);opacity:0;transition:opacity .22s ease}
+  .dl-modal[hidden]{display:none}
+  .dl-modal:not(.show){pointer-events:none}
   .dl-modal.show{opacity:1}
   .dl-sheet{position:relative;width:min(500px,100%);background:var(--card);border:1px solid var(--line-2);border-radius:24px;padding:30px 28px 22px;box-shadow:var(--shadow-lg);transform:translateY(16px) scale(.96);transition:transform .3s cubic-bezier(.22,1.28,.36,1)}
   .dl-modal.show .dl-sheet{transform:none}

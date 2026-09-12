@@ -1,0 +1,18 @@
+[Unit]
+Description=Zhaoxi Cloud Sync Server (朝夕云同步服务器)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/zhaoxi
+ExecStart=/usr/bin/python3 /opt/zhaoxi/cloud-server.py --host 127.0.0.1 --port 8787 --db /opt/zhaoxi/zhaoxi-cloud.db
+Restart=always
+RestartSec=3
+# 安全加固：独立静态用户
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/zhaoxi
+
+[Install]
+WantedBy=multi-user.target

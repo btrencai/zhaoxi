@@ -1,0 +1,12 @@
+# 朝夕云同步 · Caddy 反向代理（自动 HTTPS）
+# 用法：把 todo.example.com 换成你的域名，复制到 /etc/caddy/Caddyfile 后 systemctl reload caddy
+
+todo.example.com {
+    encode gzip
+    reverse_proxy 127.0.0.1:8787 {
+        header_up X-Real-IP {remote_host}
+    }
+    # 认证类接口简单限流（Caddy 内置）
+    @auth path /api/register /api/login /api/wechat/qr
+    rate_limit @auth 30r/m
+}

@@ -1,0 +1,10 @@
+{
+  "public_url": "https://todo.example.com",
+  "smtp_host": "smtp.qq.com",
+  "smtp_port": 465,
+  "smtp_tls": "ssl",
+  "smtp_user": "",
+  "smtp_pass": "",
+  "smtp_from": "",
+  "dev_echo_code": false
+}

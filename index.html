@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>朝夕</title>
+    <script type="module" src="/src/main.ts" defer></script>
+  </head>
+  <body>
+    <div class="frame">
+      <!-- ── 自定义标题栏（无边框窗口） ── -->
+      <header class="titlebar" data-tauri-drag-region>
+        <div class="titlebar-left" data-tauri-drag-region>
+          <span class="titlebar-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="none"><defs><linearGradient id="tmark-rg" x1="12" y1="3.5" x2="12" y2="20.5" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#ffb46b"/></linearGradient></defs><circle cx="12" cy="12" r="6.5" stroke="url(#tmark-rg)" stroke-width="2.8" /></svg>
+          </span>
+          <span class="titlebar-title" data-tauri-drag-region>朝夕</span>
+          <span class="titlebar-version" id="app-version">v1.0.0</span>
+          <button id="cloud-btn" class="cloud-chip" type="button" title="云端同步" aria-label="云端同步状态">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.2 18.4h9.2a4.4 4.4 0 0 0 .9-8.7 6 6 0 0 0-11.6-1.6A4.6 4.6 0 0 0 7.2 18.4Z" /></svg>
+            <i class="cloud-dot" id="cloud-dot"></i>
+          </button>
+        </div>
+        <div class="titlebar-controls">
+          <button id="win-min" class="win-btn" type="button" aria-label="最小化" title="最小化">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.35"><path d="M2 6h8" /></svg>
+          </button>
+          <button id="win-max" class="win-btn" type="button" aria-label="最大化" title="最大化 / 还原">
+            <svg class="ico-max" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.35"><rect x="2.2" y="2.2" width="7.6" height="7.6" rx="1.4" /></svg>
+            <svg class="ico-restore" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.35"><rect x="2" y="4.6" width="5.4" height="5.4" rx="1.2" /><path d="M4.8 4.6V3.6a1.4 1.4 0 0 1 1.4-1.4h2.4A1.4 1.4 0 0 1 10 3.6v2.4a1.4 1.4 0 0 1-1.4 1.4h-1" /></svg>
+          </button>
+          <button id="win-close" class="win-btn win-close" type="button" aria-label="关闭" title="关闭">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.35"><path d="M2.7 2.7l6.6 6.6M9.3 2.7L2.7 9.3" /></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="body">
+        <!-- ── 侧边栏 ── -->
+        <aside class="sidebar">
+          <div class="brand">
+            <div class="brand-mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="19" height="19" fill="none"><defs><linearGradient id="bmark-rg" x1="12" y1="3.5" x2="12" y2="20.5" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#ffb46b"/></linearGradient></defs><circle cx="12" cy="12" r="6.5" stroke="url(#bmark-rg)" stroke-width="2.8" /></svg>
+            </div>
+            <div class="brand-text">
+              <strong>朝夕</strong>
+              <span>朝有所为 · 夕有所成</span>
+            </div>
+          </div>
+
+          <nav class="nav" aria-label="主导航">
+            <button class="nav-item active" type="button" data-view="todos">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6.5h10M10 12h10M10 17.5h6.5" /><path d="M4 6.2l1.2 1.2 2.2-2.4" /><path d="M4 11.7l1.2 1.2 2.2-2.4" /><path d="M4 17.2l1.2 1.2 2.2-2.4" /></svg>
+              待办事项
+            </button>
+            <button class="nav-item" type="button" data-view="notes">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 4.5h13A1.5 1.5 0 0 1 20 6v8.2l-5.8 5.8H5.5A1.5 1.5 0 0 1 4 18.5V6a1.5 1.5 0 0 1 1.5-1.5Z" /><path d="M19.8 14.2h-4.4a1.2 1.2 0 0 0-1.2 1.2v4.4" /></svg>
+              便签
+            </button>
+            <button class="nav-item" type="button" data-view="focus">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.2" /><path d="M12 7.4V12l3.2 2" /></svg>
+              专注
+            </button>
+            <button class="nav-item" type="button" data-view="clipboard">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5.5" y="4.8" width="13" height="16" rx="2.6" /><path d="M9.4 4.8V3.7A1.5 1.5 0 0 1 10.9 2.2h2.2a1.5 1.5 0 0 1 1.5 1.5v1.1" /><path d="M9.2 11.4h5.6M9.2 15.1h4" /></svg>
+              剪贴板
+            </button>
+            <button class="nav-item" type="button" data-view="stats">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19.5V11M12 19.5v-14M19 19.5v-9" /></svg>
+              统计
+            </button>
+            <button class="nav-item" type="button" data-view="settings">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9" /><circle cx="15" cy="7" r="2.2" /><circle cx="9" cy="17" r="2.2" /></svg>
+              设置
+            </button>
+            <button class="nav-item" type="button" data-view="stack">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 21 8l-9 4.8L3 8l9-4.8Z" /><path d="M3 12.4l9 4.8 9-4.8" /><path d="M3 16.8l9 4.8 9-4.8" /></svg>
+              技术栈
+            </button>
+          </nav>
+
+          <div class="sidebar-foot">
+            <div class="theme-seg" id="theme-seg" role="group" aria-label="外观模式">
+              <span class="theme-thumb" id="theme-thumb" data-pos="2" aria-hidden="true"></span>
+              <button class="theme-btn" type="button" data-theme-val="light">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.2" /><path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21M5.9 5.9l1.6 1.6M16.5 16.5l1.6 1.6M18.1 5.9l-1.6 1.6M7.5 16.5l-1.6 1.6" /></svg>
+                浅色
+              </button>
+              <button class="theme-btn" type="button" data-theme-val="dark">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.2 14.6A8.2 8.2 0 1 1 9.4 3.8a6.6 6.6 0 0 0 10.8 10.8Z" /></svg>
+                深色
+              </button>
+              <button class="theme-btn" type="button" data-theme-val="auto">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.2" /><path d="M12 3.8v16.4" /><path d="M12 3.8a8.2 8.2 0 0 1 0 16.4Z" fill="currentColor" stroke="none" /></svg>
+                自动
+              </button>
+            </div>
+            <div class="chip" id="stack-chip">Tauri · Rust</div>
+          </div>
+        </aside>
+
+        <!-- ── 主区域 ── -->
+        <main class="main">
+          <!-- 待办视图 -->
+          <section class="view active" id="view-todos">
+            <header class="page-header">
+              <div>
+                <h1>待办事项</h1>
+                <p class="page-sub" id="page-date">今天</p>
+              </div>
+              <div class="progress-panel">
+                <span class="progress-label">已完成</span>
+                <div class="progress-nums"><span id="stat-done">0</span><span class="progress-sep">/</span><span id="stat-total">0</span></div>
+                <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progress-fill"></div></div>
+              </div>
+            </header>
+
+            <div class="composer">
+              <span class="composer-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13" /></svg>
+              </span>
+              <input id="todo-input" type="text" placeholder="添加一项待办，回车确认 · 支持 #标签，点日历设置日期和重复" maxlength="120" autocomplete="off" spellcheck="false" />
+              <button id="add-btn" class="btn-primary" type="button">添加</button>
+            </div>
+
+            <div class="toolbar">
+              <div class="segmented" id="segmented" role="group" aria-label="筛选待办">
+                <span class="seg-thumb" id="seg-thumb" aria-hidden="true"></span>
+                <button class="seg-btn active" type="button" data-filter="all">全部</button>
+                <button class="seg-btn" type="button" data-filter="active">进行中</button>
+                <button class="seg-btn" type="button" data-filter="done">已完成</button>
+              </div>
+              <div class="toolbar-right">
+                <div class="search">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5" /><path d="M15.8 15.8 20 20" /></svg>
+                  <input id="search-input" type="text" placeholder="搜索待办…" maxlength="60" autocomplete="off" spellcheck="false" />
+                  <button id="search-clear" class="search-clear" type="button" aria-label="清空搜索" hidden>
+                    <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" /></svg>
+                  </button>
+                </div>
+                <button id="tag-filter" class="tag-filter-chip" type="button" hidden></button>
+                <button id="sort-btn" class="btn-ghost" type="button" data-sort="manual" title="切换排序方式">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v13M7 17l-2.6-2.6M7 17l2.6-2.6" /><path d="M17 20V7M17 7l-2.6 2.6M17 7l2.6 2.6" /></svg>
+                  <span id="sort-label">默认排序</span>
+                </button>
+                <button id="clear-done" class="btn-ghost" type="button">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15M9.5 7V5.6c0-.9.7-1.6 1.6-1.6h1.8c.9 0 1.6.7 1.6 1.6V7" /><path d="M6.6 7l.8 12.2c.05 1 .9 1.8 1.9 1.8h5.4c1 0 1.85-.8 1.9-1.8L17.4 7" /></svg>
+                  清除已完成
+                </button>
+              </div>
+            </div>
+
+            <div class="list-card">
+              <ul id="todo-list" class="todo-list"></ul>
+              <div id="empty-state" class="empty-state">
+                <svg class="empty-art" viewBox="0 0 72 72" fill="none" aria-hidden="true">
+                  <rect x="15" y="13" width="40" height="47" rx="10" style="stroke: var(--stroke-2)" stroke-width="1.6" />
+                  <path d="M25 28h22M25 36h14" style="stroke: var(--stroke-2)" stroke-width="1.6" stroke-linecap="round" />
+                  <circle cx="48" cy="49" r="12.5" fill="url(#emptyGrad)" />
+                  <path d="M42.4 49.4l3.7 3.6 7.2-7.7" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" />
+                  <defs>
+                    <linearGradient id="emptyGrad" x1="35.5" y1="36.5" x2="60.5" y2="61.5" gradientUnits="userSpaceOnUse">
+                      <stop style="stop-color: var(--accent)" />
+                      <stop offset="1" style="stop-color: var(--accent-2)" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <p>列表空空如也</p>
+                <span>在上方输入内容，开始记录第一项待办</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- 便签视图 -->
+          <section class="view" id="view-notes">
+            <header class="page-header">
+              <div>
+                <h1>便签</h1>
+                <p class="page-sub">随手记录 · 自动保存到本机</p>
+              </div>
+              <button id="note-add" class="btn-primary" type="button">新建便签</button>
+            </header>
+            <div class="notes-wrap">
+              <div class="notes-list card" id="notes-list">
+                <div class="notes-empty" id="notes-empty">还没有便签<br /><span>点击右上角「新建便签」开始</span></div>
+              </div>
+              <div class="note-editor card">
+                <div class="note-editor-head">
+                  <span class="note-meta" id="note-editor-time">未选择便签</span>
+                  <button id="note-delete" class="icon-btn danger" type="button" title="删除当前便签" aria-label="删除当前便签" disabled>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15M9.5 7V5.6c0-.9.7-1.6 1.6-1.6h1.8c.9 0 1.6.7 1.6 1.6V7" /><path d="M6.6 7l.8 12.2c.05 1 .9 1.8 1.9 1.8h5.4c1 0 1.85-.8 1.9-1.8L17.4 7" /></svg>
+                  </button>
+                </div>
+                <textarea id="note-input" placeholder="选择或新建一张便签，开始输入…" spellcheck="false" disabled></textarea>
+              </div>
+            </div>
+          </section>
+
+          <!-- 专注视图 -->
+          <section class="view" id="view-focus">
+            <header class="page-header">
+              <div>
+                <h1>专注</h1>
+                <p class="page-sub">番茄工作法 · 一个番茄 = 专注 + 5 分钟休息，可切换时长</p>
+              </div>
+            </header>
+            <div class="focus-wrap">
+              <div class="focus-card card">
+                <div class="focus-ring-wrap">
+                  <svg class="focus-ring" viewBox="0 0 240 240" aria-hidden="true">
+                    <defs>
+                      <linearGradient id="focusGrad" x1="30" y1="30" x2="210" y2="210" gradientUnits="userSpaceOnUse">
+                        <stop style="stop-color: var(--accent)" />
+                        <stop offset="1" style="stop-color: var(--accent-2)" />
+                      </linearGradient>
+                    </defs>
+                    <circle class="focus-ring-track" cx="120" cy="120" r="104" />
+                    <circle class="focus-ring-fill" id="focus-ring-fill" cx="120" cy="120" r="104" style="stroke: url(#focusGrad)" />
+                  </svg>
+                  <div class="focus-center">
+                    <span class="focus-time" id="focus-time">25:00</span>
+                    <span class="focus-phase" id="focus-phase">专注时间</span>
+                  </div>
+                </div>
+                <div class="focus-controls">
+                  <button id="focus-start" class="btn-primary" type="button">开始专注</button>
+                  <button id="focus-reset" class="btn-ghost" type="button">重置</button>
+                </div>
+                <div class="focus-presets" id="focus-presets">
+                  <button class="preset-chip active" type="button" data-min="25">25 分钟</button>
+                  <button class="preset-chip" type="button" data-min="15">15 分钟</button>
+                  <button class="preset-chip" type="button" data-min="45">45 分钟</button>
+                </div>
+                <div class="focus-cycles-row">本轮完成 <span id="focus-cycles-count">0</span> 个番茄</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 剪贴板视图 -->
+          <section class="view" id="view-clipboard">
+            <header class="page-header">
+              <div>
+                <h1>剪贴板</h1>
+                <p class="page-sub">会话内历史 · 只保存在内存中，不写入磁盘</p>
+              </div>
+              <div class="toolbar-right">
+                <button id="clip-toggle" class="btn-ghost" type="button">暂停监听</button>
+                <button id="clip-clear" class="btn-ghost" type="button">清空历史</button>
+              </div>
+            </header>
+            <div class="list-card">
+              <ul id="clip-list" class="clip-list"></ul>
+              <div id="clip-empty" class="empty-state show">
+                <p>暂无记录</p>
+                <span>复制任意内容后，会自动出现在这里</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- 统计视图 -->
+          <section class="view" id="view-stats">
+            <header class="page-header">
+              <div>
+                <h1>统计</h1>
+                <p class="page-sub">完成情况与打卡热力图 · 基于本机真实数据</p>
+              </div>
+            </header>
+            <div class="stats-cards">
+              <div class="stat-card"><span class="stat-label">总完成</span><strong id="st-total">0</strong><em>条待办</em></div>
+              <div class="stat-card"><span class="stat-label">今日完成</span><strong id="st-today">0</strong><em id="st-today-date">—</em></div>
+              <div class="stat-card"><span class="stat-label">连续打卡</span><strong id="st-streak">0</strong><em>天</em></div>
+              <div class="stat-card"><span class="stat-label">本周完成</span><strong id="st-week">0</strong><em>条</em></div>
+              <div class="stat-card"><span class="stat-label">今日番茄</span><strong id="st-focus-today">0</strong><em>个专注</em></div>
+              <div class="stat-card"><span class="stat-label">累计番茄</span><strong id="st-focus-total">0</strong><em>个专注</em></div>
+            </div>
+            <div class="heat-card">
+              <div class="arch-head">
+                <h2>打卡热力图</h2>
+                <span>近 12 周</span>
+              </div>
+              <div class="heat-grid" id="heat-grid"></div>
+              <div class="heat-legend">少 <i class="heat-cell heat-0"></i><i class="heat-cell heat-1"></i><i class="heat-cell heat-2"></i><i class="heat-cell heat-3"></i><i class="heat-cell heat-4"></i> 多</div>
+            </div>
+          </section>
+
+          <!-- 设置视图 -->
+          <section class="view" id="view-settings">
+            <header class="page-header">
+              <div>
+                <h1>设置</h1>
+                <p class="page-sub">常驻、自启与窗口行为 · 修改立即生效</p>
+              </div>
+            </header>
+            <div class="settings-group card">
+              <div class="settings-group-title">账户与云同步</div>
+              <div id="cloud-settings"></div>
+            </div>
+            <div class="settings-group card">
+              <div class="settings-group-title">外观</div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <span class="setting-name">外观模式</span>
+                  <span class="setting-desc">默认跟随系统外观并实时同步，也可固定为浅色或深色</span>
+                </div>
+                <div class="seg-mini" id="set-theme">
+                  <button type="button" data-val="light">浅色</button>
+                  <button type="button" data-val="dark">深色</button>
+                  <button type="button" data-val="auto" class="active">自动</button>
+                </div>
+              </div>
+            </div>
+            <div class="settings-group card">
+              <div class="settings-group-title">常驻与退出</div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <span class="setting-name">系统托盘常驻</span>
+                  <span class="setting-desc">在任务栏通知区域显示图标，随时唤出主窗口</span>
+                </div>
+                <button class="switch" id="set-tray" type="button" role="switch" aria-checked="true" aria-label="系统托盘常驻"><i></i></button>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <span class="setting-name">关闭主窗口时</span>
+                  <span class="setting-desc">点标题栏 × 的行为（托盘关闭时始终退出）</span>
+                </div>
+                <div class="seg-mini" id="set-close">
+                  <button type="button" data-val="tray" class="active">最小化到托盘</button>
+                  <button type="button" data-val="quit">退出应用</button>
+                </div>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <span class="setting-name">启动时隐藏到托盘</span>
+                  <span class="setting-desc">适合配合开机自启，静默驻留后台</span>
+                </div>
+                <button class="switch" id="set-start-min" type="button" role="switch" aria-checked="false" aria-label="启动时隐藏到托盘"><i></i></button>
+              </div>
+            </div>
+            <div class="settings-group card">
+              <div class="settings-group-title">启动与呼出</div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <span class="setting-name">开机自启</span>
+                  <span class="setting-desc">登录 Windows 后自动在后台启动</span>
+                </div>
+                <button class="switch" id="set-autostart" type="button" role="switch" aria-checked="false" aria-label="开机自启"><i></i></button>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <span class="setting-name">全局快捷键呼出</span>
+                  <span class="setting-desc">任意界面按下 Ctrl+Alt+Space 唤出窗口并聚焦输入框 · <span class="setting-state" id="set-hotkey-state">未启用</span></span>
+                </div>
+                <button class="switch" id="set-hotkey" type="button" role="switch" aria-checked="false" aria-label="全局快捷键呼出"><i></i></button>
+              </div>
+            </div>
+            <div class="settings-group card">
+              <div class="settings-group-title">窗口</div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <span class="setting-name">窗口置顶</span>
+                  <span class="setting-desc">主窗口始终显示在其他窗口之上</span>
+                </div>
+                <button class="switch" id="set-ontop" type="button" role="switch" aria-checked="false" aria-label="窗口置顶"><i></i></button>
+              </div>
+            </div>
+            <p class="settings-note">设置保存在 %APPDATA%\com.simple.todo\settings.json，随改随存。</p>
+          </section>
+
+          <!-- 技术栈视图 -->
+          <section class="view" id="view-stack">
+            <header class="page-header">
+              <div>
+                <h1>技术栈</h1>
+                <p class="page-sub">逐项运行时实测 · 无捆绑内核 · 数据不出本机</p>
+              </div>
+              <div class="pill" id="stack-pill">Tauri</div>
+            </header>
+
+            <div class="stack-grid" id="stack-grid"></div>
+
+            <div class="arch">
+              <div class="arch-head">
+                <h2>运行架构</h2>
+                <span>应用侧单进程 · 无 Node.js 运行时</span>
+              </div>
+              <div class="arch-flow">
+                <div class="arch-node">
+                  <span class="arch-tag">核心进程 · Rust</span>
+                  <strong>simple-todo.exe</strong>
+                  <em>窗口与生命周期 · 命令处理 · 原子文件存储 · 单实例保障</em>
+                </div>
+                <div class="arch-link" aria-hidden="true">
+                  <span class="arch-line"></span>
+                  <em>IPC · invoke</em>
+                </div>
+                <div class="arch-node">
+                  <span class="arch-tag">渲染层 · WebView2</span>
+                  <strong>TypeScript UI</strong>
+                  <em>界面渲染 · 状态管理 · 事件与交互 · Vite 构建内嵌</em>
+                </div>
+              </div>
+              <div class="arch-data">
+                <em>数据流</em>
+                <span>UI ⇄ invoke ⇄ Rust 核心 → 原子写入 JSON</span>
+                <code>%APPDATA%\com.simple.todo\todos.json</code>
+              </div>
+              <div class="arch-stats">
+                <div>
+                  <span>可执行文件体积</span>
+                  <strong id="stat-size">—</strong>
+                  <div class="stat-bars" aria-hidden="true">
+                    <div class="stat-bar"><em>朝夕</em><span class="track"><i id="bar-app"></i></span><b id="bar-app-val">—</b></div>
+                    <div class="stat-bar"><em>Electron</em><span class="track"><i id="bar-ref"></i></span><b>≈ 80 MB</b></div>
+                  </div>
+                  <p class="stat-note">约为 Electron 桌面版的 1/16 · 无捆绑内核</p>
+                </div>
+                <div>
+                  <span>运行依赖</span>
+                  <strong>系统 WebView2</strong>
+                  <em>随系统更新 · 无捆绑内核</em>
+                </div>
+                <div>
+                  <span>数据存储</span>
+                  <strong>本地 JSON</strong>
+                  <em>原子写入 · 损坏自愈 · 旧数据迁移</em>
+                </div>
+              </div>
+            </div>
+
+            <div class="stack-actions">
+              <button id="open-data-dir" class="btn-ghost" type="button">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.2 7.2a2 2 0 0 1 2-2h3.6l2 2.6h8a2 2 0 0 1 2 2v6.6a2 2 0 0 1-2 2H5.2a2 2 0 0 1-2-2V7.2Z" /></svg>
+                打开数据目录
+              </button>
+              <button id="export-data" class="btn-ghost" type="button">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M12 15l-3.4-3.4M12 15l3.4-3.4" /><path d="M4.5 17v1.6A2.4 2.4 0 0 0 6.9 21h10.2a2.4 2.4 0 0 0 2.4-2.4V17" /></svg>
+                导出数据
+              </button>
+              <button id="copy-diag" class="btn-ghost" type="button">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="8.5" y="8.5" width="10.5" height="11.5" rx="2.2" /><path d="M5.5 15.5h-.9A1.6 1.6 0 0 1 3 13.9V6.1a1.6 1.6 0 0 1 1.6-1.6h7.2A1.6 1.6 0 0 1 13.4 6.1v.4" /></svg>
+                复制诊断信息
+              </button>
+              <span class="data-path" id="data-path-hint">%APPDATA%\com.simple.todo\todos.json</span>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- ── 登录 / 注册弹层 ── -->
+    <div class="auth-overlay" id="auth-overlay" hidden>
+      <div class="auth-card" role="dialog" aria-modal="true" aria-label="登录或注册">
+        <button class="auth-close" id="auth-close" type="button" aria-label="关闭">
+          <svg viewBox="0 0 12 12" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2.7 2.7l6.6 6.6M9.3 2.7L2.7 9.3" /></svg>
+        </button>
+        <div class="brand-mark auth-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none"><defs><linearGradient id="amark-rg" x1="12" y1="3.5" x2="12" y2="20.5" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#ffb46b"/></linearGradient></defs><circle cx="12" cy="12" r="6.5" stroke="url(#amark-rg)" stroke-width="2.8" /></svg>
+        </div>
+        <h2 class="auth-title" id="auth-title">登录到「朝夕」</h2>
+        <p class="auth-sub" id="auth-sub">本地优先：数据始终保存在本机，登录仅用于多设备云同步</p>
+        <div class="seg-auth" id="auth-tabs">
+          <button type="button" data-tab="login" class="active">登录</button>
+          <button type="button" data-tab="register">注册</button>
+        </div>
+        <form id="auth-form" novalidate>
+          <label class="auth-field">
+            <span>服务器地址</span>
+            <input id="auth-server" type="url" placeholder="https://你的服务器地址" autocomplete="url" spellcheck="false" />
+          </label>
+          <label class="auth-field">
+            <span>邮箱</span>
+            <input id="auth-email" type="email" placeholder="you@example.com" autocomplete="email" spellcheck="false" />
+          </label>
+          <label class="auth-field">
+            <span>密码</span>
+            <input id="auth-password" type="password" placeholder="至少 6 位" autocomplete="current-password" />
+          </label>
+          <label class="auth-field" id="auth-confirm-field" hidden>
+            <span>确认密码</span>
+            <input id="auth-confirm" type="password" placeholder="再输入一遍" autocomplete="new-password" />
+          </label>
+          <p class="auth-error" id="auth-error" hidden></p>
+          <button class="btn-primary auth-submit" id="auth-submit" type="submit">登录</button>
+          <div class="auth-toggle-row">
+            <button type="button" class="auth-adv" id="auth-adv" hidden>使用自定义服务器</button>
+            <button type="button" class="auth-adv" id="auth-adv-back" hidden>返回使用官方服务器</button>
+          </div>
+          <p class="auth-hint" id="auth-hint">没有服务器？<code>tools/cloud-server.py</code> 可在任意机器一键部署（见使用说明）</p>
+        </form>
+        <div class="auth-code" id="auth-code-step" hidden>
+          <p class="auth-code-info" id="auth-code-info">验证码已发送</p>
+          <label class="auth-field">
+            <span>邮箱验证码</span>
+            <input id="auth-code" inputmode="numeric" maxlength="6" placeholder="6 位数字" autocomplete="one-time-code" spellcheck="false" />
+          </label>
+          <p class="auth-error" id="auth-code-error" hidden></p>
+          <button class="btn-primary auth-submit" id="auth-verify-btn" type="button">验证并登录</button>
+          <div class="auth-toggle-row">
+            <button type="button" class="auth-adv" id="auth-resend" disabled>重新发送（60s）</button>
+            <button type="button" class="auth-adv" id="auth-edit-back">返回修改</button>
+          </div>
+        </div>
+        <button type="button" class="auth-quit" id="auth-quit" hidden>退出应用</button>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite">
+      <span class="dot" aria-hidden="true"></span>
+      <span id="toast-msg"></span>
+      <button id="toast-action" class="toast-action" type="button" hidden>撤销</button>
+    </div>
+  </body>
+</html>

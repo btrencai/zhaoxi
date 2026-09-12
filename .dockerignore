@@ -1,0 +1,10 @@
+.git
+.github
+node_modules
+dist
+preview
+preview2
+src-tauri
+src
+docs
+deploy

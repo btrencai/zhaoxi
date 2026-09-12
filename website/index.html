@@ -124,7 +124,8 @@
   @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
   @media (prefers-reduced-motion: reduce){
     .float{animation:none}
-    .reveal{opacity:1 !important; transform:none !important}
+    .aurora i{animation:none}
+    .reveal{opacity:1 !important; transform:none !important; filter:none !important}
     html.js nav{opacity:1 !important; transform:none !important}
     html{scroll-behavior:auto}
   }
@@ -210,25 +211,50 @@
   .foot-l{display:flex; gap:18px; flex-wrap:wrap}
 
   /* ── 滚动显现 ── */
-  html.js .reveal{opacity:0; transform:translateY(30px); transition:opacity .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1)}
-  html.js .reveal.in{opacity:1; transform:none}
-  html.js .hero .d1{transition-delay:.05s}
-  html.js .hero .d2{transition-delay:.13s}
-  html.js .hero .d3{transition-delay:.21s}
-  html.js .hero .d4{transition-delay:.29s}
-  html.js .hero .d5{transition-delay:.37s}
-  html.js .hero .d6{transition-delay:.45s}
-  html.js .hero .d7{transition-delay:.53s}
-  html.js .hero .d8{transition-delay:.61s}
-  html.js .hero-icon.reveal{transform:translateY(16px) scale(.6)}
-  html.js .split .txt.reveal{transform:translate(-30px, 14px)}
-  html.js .split .shot.reveal{transform:translate(36px, 18px) scale(.985)}
-  html.js .split.rev .txt.reveal{transform:translate(30px, 14px)}
-  html.js .split.rev .shot.reveal{transform:translate(-36px, 18px) scale(.985)}
+  html.js .reveal{opacity:0; transform:translateY(38px); filter:blur(12px);
+    transition:opacity .8s ease, transform 1.05s cubic-bezier(.22,1.28,.36,1), filter .9s ease}
+  html.js .reveal.in{opacity:1; transform:none; filter:blur(0)}
+  html.js .d1{transition-delay:.05s}
+  html.js .d2{transition-delay:.14s}
+  html.js .d3{transition-delay:.23s}
+  html.js .d4{transition-delay:.32s}
+  html.js .d5{transition-delay:.41s}
+  html.js .d6{transition-delay:.50s}
+  html.js .d7{transition-delay:.59s}
+  html.js .d8{transition-delay:.68s}
+  html.js .d9{transition-delay:.77s}
+  html.js .hero-icon.reveal:not(.in){transform:translateY(16px) scale(.6)}
+  html.js .hero h1 .ch{display:inline-block}
+  html.js .hero h1 .ch:not(.in){transform:translateY(54px) scale(.8)}
+  html.js .split .txt .reveal:not(.in){transform:translate(-30px, 16px)}
+  html.js .split .shot.reveal:not(.in){transform:translate(42px, 20px) scale(.96)}
+  html.js .split.rev .txt .reveal:not(.in){transform:translate(30px, 16px)}
+  html.js .split.rev .shot.reveal:not(.in){transform:translate(-42px, 20px) scale(.96)}
   html.js nav{opacity:0; transform:translateY(-8px); transition:opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1), border-color .3s}
   html.js body.loaded nav{opacity:1; transform:none}
   .hero-shot .frame{will-change:transform}
   .cnt{font-style:normal}
+
+  /* 环境光斑：页面自己在缓慢呼吸 */
+  .hero{position:relative; overflow:hidden}
+  .hero > *:not(.aurora){position:relative; z-index:1}
+  .aurora{position:absolute; inset:0; z-index:0; pointer-events:none}
+  .aurora i{position:absolute; display:block; border-radius:50%; filter:blur(70px); opacity:.5}
+  .aurora i:nth-child(1){width:54vw; height:54vw; left:-14vw; top:-18vw;
+    background:radial-gradient(circle at 32% 32%, rgba(125,110,251,.55), transparent 66%);
+    animation:drift1 26s ease-in-out infinite alternate}
+  .aurora i:nth-child(2){width:46vw; height:46vw; right:-16vw; top:-8vw;
+    background:radial-gradient(circle at 60% 40%, rgba(255,180,107,.45), transparent 66%);
+    animation:drift2 32s ease-in-out infinite alternate}
+  @keyframes drift1{
+    0%{transform:translate3d(0,0,0) scale(1)}
+    50%{transform:translate3d(7%,5%,0) scale(1.14)}
+    100%{transform:translate3d(-5%,-4%,0) scale(.94)}}
+  @keyframes drift2{
+    0%{transform:translate3d(0,0,0) scale(1.05)}
+    50%{transform:translate3d(-6%,7%,0) scale(.92)}
+    100%{transform:translate3d(4%,-5%,0) scale(1.12)}}
+  @media (prefers-color-scheme: dark){ .aurora i{opacity:.32} }
 </style>
 </head>
 <body>
@@ -245,19 +271,20 @@
 </nav>
 
 <header class="hero" id="top">
+  <div class="aurora" aria-hidden="true"><i></i><i></i></div>
   <img class="hero-icon float reveal d1" src="assets/icon.png" alt="朝夕 图标">
   <div class="eyebrow reveal d2">本地优先 · 数据不出电脑</div>
-  <h1 class="reveal d3">朝夕</h1>
-  <div class="tagline reveal d4">朝有所为，夕有所成。</div>
-  <p class="sub reveal d5">一款安静、体面的 Windows 效率工作台。<br>待办、便签与专注，收进一处；所有数据，只留在你自己的电脑。</p>
-  <div class="cta-row reveal d6">
+  <h1><span class="ch reveal d3">朝</span><span class="ch reveal d4">夕</span></h1>
+  <div class="tagline reveal d5">朝有所为，夕有所成。</div>
+  <p class="sub reveal d6">一款安静、体面的 Windows 效率工作台。<br>待办、便签与专注，收进一处；所有数据，只留在你自己的电脑。</p>
+  <div class="cta-row reveal d7">
     <a class="btn btn-primary" href="https://github.com/btrencai/zhaoxi/releases/latest">下载 Windows 版</a>
     <a class="btn btn-ghost" href="#features">进一步了解
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
     </a>
   </div>
-  <div class="hero-meta reveal d7">Windows 10 / 11 · 约 5 MB · 免费</div>
-  <div class="hero-shot reveal d8">
+  <div class="hero-meta reveal d8">Windows 10 / 11 · 约 5 MB · 免费</div>
+  <div class="hero-shot reveal d9">
     <div class="frame"><img src="assets/shot-todos-light.png" alt="朝夕 待办界面"></div>
   </div>
 </header>
@@ -265,11 +292,11 @@
 <section id="features">
   <div class="wrap">
     <div class="split">
-      <div class="txt reveal">
-        <div class="kicker">待办事项</div>
-        <h2>今天的事，<br>一目了然。</h2>
-        <p class="lead">标签、优先级、截止日与重复安排；拖拽即排序，回车即新增。完成的一刻，轻轻划掉。</p>
-        <ul class="mini-points">
+      <div class="txt">
+        <div class="kicker reveal d1">待办事项</div>
+        <h2 class="reveal d2">今天的事，<br>一目了然。</h2>
+        <p class="lead reveal d3">标签、优先级、截止日与重复安排；拖拽即排序，回车即新增。完成的一刻，轻轻划掉。</p>
+        <ul class="mini-points reveal d4">
           <li><span class="dot"></span><span><b>标签与优先级</b>：轻重缓急，用颜色说话</span></li>
           <li><span class="dot"></span><span><b>截止日与重复</b>：内置精美月历，一眼看清节奏</span></li>
           <li><span class="dot"></span><span><b>拖拽排序 · 删除撤销</b>：操作毫无压力</span></li>
@@ -284,11 +311,11 @@
   <div class="wrap">
     <div class="split rev">
       <div class="shot reveal"><div class="frame"><img src="assets/shot-todos-dark.png" alt="深色模式待办"></div></div>
-      <div class="txt reveal">
-        <div class="kicker">云同步 · 可选</div>
-        <h2>一处记录，<br>处处同步。</h2>
-        <p class="lead">数据以本机为准，云端只做安静的中转。换一台电脑，登录同一个账号，一切如约而至。</p>
-        <ul class="mini-points">
+      <div class="txt">
+        <div class="kicker reveal d1">云同步 · 可选</div>
+        <h2 class="reveal d2">一处记录，<br>处处同步。</h2>
+        <p class="lead reveal d3">数据以本机为准，云端只做安静的中转。换一台电脑，登录同一个账号，一切如约而至。</p>
+        <ul class="mini-points reveal d4">
           <li><span class="dot"></span><span><b>本地优先</b>：断网也可完整使用，服务器下线不影响你</span></li>
           <li><span class="dot"></span><span><b>增量同步</b>：几 KB 的流量，毫秒级往返</span></li>
           <li><span class="dot"></span><span><b>账号隔离</b>：切换账号，本机数据自动归档，绝不串号</span></li>
@@ -301,11 +328,11 @@
 <section id="focus">
   <div class="wrap">
     <div class="split">
-      <div class="txt reveal">
-        <div class="kicker">专注</div>
-        <h2>一次只做<br>一件事。</h2>
-        <p class="lead">番茄钟与每日专注统计，把注意力花在真正重要的事情上。</p>
-        <ul class="mini-points">
+      <div class="txt">
+        <div class="kicker reveal d1">专注</div>
+        <h2 class="reveal d2">一次只做<br>一件事。</h2>
+        <p class="lead reveal d3">番茄钟与每日专注统计，把注意力花在真正重要的事情上。</p>
+        <ul class="mini-points reveal d4">
           <li><span class="dot"></span><span><b>番茄钟</b>：专注计时，结束轻声提醒</span></li>
           <li><span class="dot"></span><span><b>专注统计</b>：每一天的投入，都算数</span></li>
         </ul>
@@ -435,7 +462,7 @@
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(() => {
-        const y = Math.min(window.scrollY * 0.12, 90);
+        const y = Math.min(window.scrollY * 0.16, 110);
         frame.style.transform = y > 1 ? 'translate3d(0, ' + y + 'px, 0)' : '';
         ticking = false;
       });

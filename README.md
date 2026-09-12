@@ -118,6 +118,7 @@ python cloud-server.py --host 127.0.0.1 --port 8787
 │   ├── cloud-server.py  # 云同步服务端（单文件）
 │   └── make-icon.py     # 应用图标生成器
 ├── deploy/              # 部署套件（systemd / Caddy / Nginx / 宝塔指南）
+├── website/             # 产品官网（纯静态，Apple 风格）
 ├── docs/                # 设计文档与截图
 ├── Dockerfile           # 服务端镜像
 └── .github/workflows/   # 自动构建（exe + GHCR 镜像）

@@ -1954,7 +1954,7 @@ input {
 }
 .focus-phase {
   font-size: 12px;
-  color: var(--text-3);
+  color: var(--text-2);
   letter-spacing: 0.08em;
 }
 .focus-controls {
@@ -1989,9 +1989,82 @@ input {
   font-size: 12px;
   color: var(--text-3);
 }
-.focus-cycles-row span {
-  color: var(--accent);
-  font-weight: 700;
+.focus-context {
+  font-size: 11.5px;
+  color: var(--text-2);
+}
+.focus-dots {
+  display: flex;
+  gap: 7px;
+}
+.focus-dots i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--text-1) 20%, transparent);
+  transition: background 0.25s var(--ease), transform 0.25s var(--ease);
+}
+.focus-dots i.on {
+  background: var(--accent);
+  transform: scale(1.12);
+}
+.focus-task {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-3);
+}
+.focus-task select {
+  max-width: 240px;
+  padding: 6px 10px;
+  border-radius: 9px;
+  border: 1px solid var(--stroke);
+  background: var(--card);
+  color: var(--text-1);
+  font-family: inherit;
+  font-size: 12px;
+  outline: none;
+}
+.focus-task select:focus-visible {
+  border-color: var(--accent-line);
+}
+.focus-today-line {
+  font-size: 12px;
+  color: var(--text-3);
+}
+.focus-settings {
+  display: grid;
+  gap: 11px;
+  width: 100%;
+  max-width: 430px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--stroke);
+  background: color-mix(in srgb, var(--text-1) 3%, transparent);
+}
+.fs-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.fs-name {
+  font-size: 12px;
+  color: var(--text-2);
+}
+.fs-chips {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.focus-presets.dimmed {
+  opacity: 0.45;
+  transition: opacity 0.3s var(--ease);
+}
+#focus-settings-toggle {
+  cursor: pointer;
 }
 
 /* ── 剪贴板 ── */

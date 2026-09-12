@@ -201,8 +201,9 @@
             <header class="page-header">
               <div>
                 <h1>专注</h1>
-                <p class="page-sub">番茄工作法 · 一个番茄 = 专注 + 5 分钟休息，可切换时长</p>
+                <p class="page-sub">番茄工作法 · 专注与休息交替，保持清醒的节奏</p>
               </div>
+              <button id="focus-settings-toggle" class="pill" type="button" aria-expanded="false">专注设置</button>
             </header>
             <div class="focus-wrap">
               <div class="focus-card card">
@@ -220,10 +221,19 @@
                   <div class="focus-center">
                     <span class="focus-time" id="focus-time">25:00</span>
                     <span class="focus-phase" id="focus-phase">专注时间</span>
+                    <span class="focus-context" id="focus-context">第 1 个番茄</span>
                   </div>
+                </div>
+                <div class="focus-dots" id="focus-dots" aria-label="本轮进度"></div>
+                <div class="focus-task">
+                  <span class="focus-task-label">关联待办</span>
+                  <select id="focus-task-select" aria-label="关联待办">
+                    <option value="">不关联</option>
+                  </select>
                 </div>
                 <div class="focus-controls">
                   <button id="focus-start" class="btn-primary" type="button">开始专注</button>
+                  <button id="focus-skip" class="btn-ghost" type="button">跳过</button>
                   <button id="focus-reset" class="btn-ghost" type="button">重置</button>
                 </div>
                 <div class="focus-presets" id="focus-presets">
@@ -231,7 +241,15 @@
                   <button class="preset-chip" type="button" data-min="15">15 分钟</button>
                   <button class="preset-chip" type="button" data-min="45">45 分钟</button>
                 </div>
-                <div class="focus-cycles-row">本轮完成 <span id="focus-cycles-count">0</span> 个番茄</div>
+                <div class="focus-today-line" id="focus-today">今日还没有完成的番茄</div>
+                <div class="focus-settings" id="focus-settings" hidden>
+                  <div class="fs-row"><span class="fs-name">短休息</span><div class="fs-chips" id="fs-short-chips"><button class="preset-chip" type="button" data-short="3">3 分钟</button><button class="preset-chip" type="button" data-short="5">5 分钟</button><button class="preset-chip" type="button" data-short="10">10 分钟</button></div></div>
+                  <div class="fs-row"><span class="fs-name">长休息</span><div class="fs-chips" id="fs-long-chips"><button class="preset-chip" type="button" data-long="10">10 分钟</button><button class="preset-chip" type="button" data-long="15">15 分钟</button><button class="preset-chip" type="button" data-long="20">20 分钟</button><button class="preset-chip" type="button" data-long="30">30 分钟</button></div></div>
+                  <div class="fs-row"><span class="fs-name">长休间隔</span><div class="fs-chips" id="fs-rounds-chips"><button class="preset-chip" type="button" data-rounds="2">每 2 个</button><button class="preset-chip" type="button" data-rounds="3">每 3 个</button><button class="preset-chip" type="button" data-rounds="4">每 4 个</button><button class="preset-chip" type="button" data-rounds="5">每 5 个</button></div></div>
+                  <div class="fs-row"><span class="fs-name">专注结束后自动开始休息</span><button class="switch" id="fs-auto-break" type="button" role="switch" aria-checked="true" aria-label="自动开始休息"><i></i></button></div>
+                  <div class="fs-row"><span class="fs-name">休息结束后自动开始下一轮</span><button class="switch" id="fs-auto-next" type="button" role="switch" aria-checked="false" aria-label="休息后自动开始下一轮"><i></i></button></div>
+                  <div class="fs-row"><span class="fs-name">阶段完成提示音</span><button class="switch" id="fs-sound" type="button" role="switch" aria-checked="true" aria-label="阶段完成提示音"><i></i></button></div>
+                </div>
               </div>
             </div>
           </section>

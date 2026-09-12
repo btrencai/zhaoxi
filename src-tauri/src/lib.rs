@@ -346,7 +346,7 @@ fn archive_and_clear_data(app: AppHandle, reason: String) -> Result<String, Stri
     let label = if safe.is_empty() { "switch".to_string() } else { safe };
     let backup = dir.join("backups").join(format!("{label}-{stamp}"));
     fs::create_dir_all(&backup).map_err(|e| e.to_string())?;
-    for name in ["todos.json", "notes.json", "focus.json", "meta.json"] {
+    for name in ["todos.json", "notes.json", "focus.json", "focus-state.json", "meta.json"] {
         let file = dir.join(name);
         if file.exists() {
             fs::rename(&file, backup.join(name))
@@ -456,6 +456,22 @@ fn default_true() -> bool {
     true
 }
 
+fn default_focus_work() -> u32 {
+    25
+}
+
+fn default_focus_short() -> u32 {
+    5
+}
+
+fn default_focus_long() -> u32 {
+    15
+}
+
+fn default_focus_rounds() -> u32 {
+    4
+}
+
 fn default_close_action() -> String {
     "tray".to_string()
 }
@@ -478,6 +494,27 @@ struct AppSettings {
     /// 窗口置顶
     #[serde(default)]
     always_on_top: bool,
+    /// 专注时长（分钟）
+    #[serde(default = "default_focus_work")]
+    focus_work: u32,
+    /// 短休息时长（分钟）
+    #[serde(default = "default_focus_short")]
+    focus_short: u32,
+    /// 长休息时长（分钟）
+    #[serde(default = "default_focus_long")]
+    focus_long: u32,
+    /// 长休息间隔（每完成 N 个番茄进入长休息）
+    #[serde(default = "default_focus_rounds")]
+    focus_rounds: u32,
+    /// 专注结束后自动开始休息
+    #[serde(default = "default_true")]
+    focus_auto_break: bool,
+    /// 休息结束后自动开始下一轮专注
+    #[serde(default)]
+    focus_auto_next: bool,
+    /// 阶段完成时播放提示音
+    #[serde(default = "default_true")]
+    focus_sound: bool,
 }
 
 impl Default for AppSettings {
@@ -488,6 +525,13 @@ impl Default for AppSettings {
             start_minimized: false,
             quick_hotkey: false,
             always_on_top: false,
+            focus_work: 25,
+            focus_short: 5,
+            focus_long: 15,
+            focus_rounds: 4,
+            focus_auto_break: true,
+            focus_auto_next: false,
+            focus_sound: true,
         }
     }
 }
@@ -513,6 +557,34 @@ fn load_settings(app: AppHandle) -> AppSettings {
 fn save_settings(app: AppHandle, settings: AppSettings) -> Result<bool, String> {
     let file = settings_file(&app)?;
     write_json_atomic(&file, &settings)?;
+    Ok(true)
+}
+
+fn focus_state_file(app: &AppHandle) -> Result<PathBuf, String> {
+    Ok(data_dir(app)?.join("focus-state.json"))
+}
+
+/// 读取进行中的专注计时状态（跨重启恢复；无则返回 None）
+#[tauri::command]
+fn load_focus_state(app: AppHandle) -> Option<serde_json::Value> {
+    let file = focus_state_file(&app).ok()?;
+    let raw = fs::read_to_string(file).ok()?;
+    serde_json::from_str::<serde_json::Value>(&raw).ok()
+}
+
+#[tauri::command]
+fn save_focus_state(app: AppHandle, state: serde_json::Value) -> Result<bool, String> {
+    let file = focus_state_file(&app)?;
+    write_json_atomic(&file, &state)?;
+    Ok(true)
+}
+
+#[tauri::command]
+fn clear_focus_state(app: AppHandle) -> Result<bool, String> {
+    let file = focus_state_file(&app)?;
+    if file.exists() {
+        fs::remove_file(&file).map_err(|e| e.to_string())?;
+    }
     Ok(true)
 }
 
@@ -681,7 +753,10 @@ pub fn run() {
             save_owner,
             archive_and_clear_data,
             quit_app,
-            open_external
+            open_external,
+            load_focus_state,
+            save_focus_state,
+            clear_focus_state
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

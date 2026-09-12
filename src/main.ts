@@ -155,7 +155,16 @@ const els = {
   focusStart: $id<HTMLButtonElement>("focus-start"),
   focusReset: $id<HTMLButtonElement>("focus-reset"),
   focusPresets: $id("focus-presets"),
-  focusCyclesCount: $id("focus-cycles-count"),
+  focusSkip: $id<HTMLButtonElement>("focus-skip"),
+  focusDots: $id("focus-dots"),
+  focusContext: $id("focus-context"),
+  focusTaskSelect: $id<HTMLSelectElement>("focus-task-select"),
+  focusToday: $id("focus-today"),
+  focusSettingsToggle: $id<HTMLButtonElement>("focus-settings-toggle"),
+  focusSettings: $id("focus-settings"),
+  fsAutoBreak: $id("fs-auto-break"),
+  fsAutoNext: $id("fs-auto-next"),
+  fsSound: $id("fs-sound"),
   clipList: $id<HTMLUListElement>("clip-list"),
   clipEmpty: $id("clip-empty"),
   clipToggle: $id<HTMLButtonElement>("clip-toggle"),
@@ -212,15 +221,16 @@ let currentView = "todos";
 let notes: Note[] = [];
 let activeNoteId: string | null = null;
 let noteSaveTimer: number | null = null;
-// 专注
-let focusMinutes = 25;
-const BREAK_MINUTES = 5;
-let timerMode: "focus" | "break" = "focus";
+// 专注（番茄钟）
+type FocusPhase = "focus" | "short" | "long";
+let focusPhase: FocusPhase = "focus";
 let timerRunning = false;
 let timerEndsAt = 0;
-let timerRemainingSec = focusMinutes * 60;
+let timerRemainingSec = 25 * 60;
 let timerInterval: number | null = null;
-let cyclesDone = 0;
+let roundDone = 0;
+let focusTaskId: string | null = null;
+
 // 剪贴板
 let clips: ClipEntry[] = [];
 let clipListening = true;
@@ -233,6 +243,13 @@ interface AppSettings {
   startMinimized: boolean;
   quickHotkey: boolean;
   alwaysOnTop: boolean;
+  focusWork: number;
+  focusShort: number;
+  focusLong: number;
+  focusRounds: number;
+  focusAutoBreak: boolean;
+  focusAutoNext: boolean;
+  focusSound: boolean;
 }
 
 let settings: AppSettings = {
@@ -241,6 +258,13 @@ let settings: AppSettings = {
   startMinimized: false,
   quickHotkey: false,
   alwaysOnTop: false,
+  focusWork: 25,
+  focusShort: 5,
+  focusLong: 15,
+  focusRounds: 4,
+  focusAutoBreak: true,
+  focusAutoNext: false,
+  focusSound: true,
 };
 
 // ── 图标 ───────────────────────────────────────────────
@@ -1671,8 +1695,41 @@ function fmtClock(sec: number): string {
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
+function phaseMinutes(phase: FocusPhase): number {
+  if (phase === "focus") return Math.max(1, settings.focusWork || 25);
+  if (phase === "short") return Math.max(1, settings.focusShort || 5);
+  return Math.max(1, settings.focusLong || 15);
+}
+
 function phaseTotalSec(): number {
-  return (timerMode === "focus" ? focusMinutes : BREAK_MINUTES) * 60;
+  return phaseMinutes(focusPhase) * 60;
+}
+
+const PHASE_LABEL: Record<FocusPhase, string> = { focus: "专注时间", short: "短休息", long: "长休息" };
+
+function updateFocusToday() {
+  const key = toDateInputValue(Date.now());
+  const done = focusStats[key] ?? 0;
+  const mins = done * (settings.focusWork || 25);
+  els.focusToday.textContent =
+    done > 0 ? `今日已完成 ${done} 个番茄 · 约 ${mins} 分钟专注` : "今日还没有完成的番茄，开始第一个吧";
+}
+
+function populateFocusSelect() {
+  if (focusTaskId && !todos.some((t) => t.id === focusTaskId && !t.done)) focusTaskId = null;
+  const sel = els.focusTaskSelect;
+  sel.innerHTML = "";
+  const none = document.createElement("option");
+  none.value = "";
+  none.textContent = "不关联";
+  sel.appendChild(none);
+  for (const t of todos.filter((x) => !x.done).slice(0, 30)) {
+    const opt = document.createElement("option");
+    opt.value = t.id;
+    opt.textContent = t.text.length > 28 ? `${t.text.slice(0, 28)}…` : t.text;
+    sel.appendChild(opt);
+  }
+  sel.value = focusTaskId ?? "";
 }
 
 function renderFocus() {
@@ -1681,19 +1738,49 @@ function renderFocus() {
   const fraction = total > 0 ? timerRemainingSec / total : 0;
   focusRing.style.strokeDasharray = String(RING_CIRCUMFERENCE);
   focusRing.style.strokeDashoffset = String(RING_CIRCUMFERENCE * (1 - fraction));
-  els.focusPhase.textContent = timerMode === "focus" ? "专注时间" : "休息时间";
+  els.focusPhase.textContent = PHASE_LABEL[focusPhase];
+  els.focusPresets.classList.toggle("dimmed", focusPhase !== "focus");
+  const rounds = Math.max(2, settings.focusRounds || 4);
+  if (focusPhase === "focus") {
+    const linked = todos.find((t) => t.id === focusTaskId && !t.done);
+    els.focusContext.textContent = linked
+      ? `专注：${linked.text.length > 16 ? `${linked.text.slice(0, 16)}…` : linked.text}`
+      : `第 ${(roundDone % rounds) + 1} 个番茄 · 每 ${rounds} 个番茄后长休息`;
+  } else if (focusPhase === "short") {
+    els.focusContext.textContent = "短休息 · 起来活动一下";
+  } else {
+    els.focusContext.textContent = "长休息 · 好好放松";
+  }
   const atStart = timerRemainingSec === total;
   els.focusStart.textContent = timerRunning
     ? "暂停"
     : atStart
-      ? timerMode === "focus"
+      ? focusPhase === "focus"
         ? "开始专注"
         : "开始休息"
       : "继续";
-  els.focusCyclesCount.textContent = String(cyclesDone);
+  const filled = focusPhase === "long" ? rounds : roundDone % rounds;
+  els.focusDots.innerHTML = "";
+  for (let i = 0; i < rounds; i += 1) {
+    const dot = document.createElement("i");
+    if (i < filled) dot.classList.add("on");
+    els.focusDots.appendChild(dot);
+  }
   els.focusPresets.querySelectorAll<HTMLButtonElement>(".preset-chip").forEach((chip) => {
-    chip.classList.toggle("active", Number(chip.dataset.min) === focusMinutes && timerMode === "focus");
+    chip.classList.toggle("active", Number(chip.dataset.min) === settings.focusWork);
   });
+  document.querySelectorAll<HTMLButtonElement>("#fs-short-chips .preset-chip").forEach((c) =>
+    c.classList.toggle("active", Number(c.dataset.short) === settings.focusShort)
+  );
+  document.querySelectorAll<HTMLButtonElement>("#fs-long-chips .preset-chip").forEach((c) =>
+    c.classList.toggle("active", Number(c.dataset.long) === settings.focusLong)
+  );
+  document.querySelectorAll<HTMLButtonElement>("#fs-rounds-chips .preset-chip").forEach((c) =>
+    c.classList.toggle("active", Number(c.dataset.rounds) === settings.focusRounds)
+  );
+  els.fsAutoBreak.setAttribute("aria-checked", String(settings.focusAutoBreak));
+  els.fsAutoNext.setAttribute("aria-checked", String(settings.focusAutoNext));
+  els.fsSound.setAttribute("aria-checked", String(settings.focusSound));
 }
 
 async function notify(title: string, body: string) {
@@ -1730,6 +1817,19 @@ function beep() {
   }
 }
 
+function persistFocusState() {
+  const state = {
+    mode: focusPhase,
+    running: timerRunning,
+    endsAt: timerEndsAt,
+    remaining: timerRemainingSec,
+    roundDone,
+    taskId: focusTaskId,
+    savedAt: Date.now(),
+  };
+  void invoke("save_focus_state", { state }).catch(() => undefined);
+}
+
 function startTimer() {
   if (timerRunning || timerRemainingSec <= 0) return;
   timerRunning = true;
@@ -1737,6 +1837,7 @@ function startTimer() {
   if (timerInterval !== null) window.clearInterval(timerInterval);
   timerInterval = window.setInterval(tickTimer, 250);
   renderFocus();
+  persistFocusState();
 }
 
 function pauseTimer() {
@@ -1748,6 +1849,7 @@ function pauseTimer() {
   }
   timerRemainingSec = Math.max(0, Math.round((timerEndsAt - Date.now()) / 1000));
   renderFocus();
+  persistFocusState();
 }
 
 function resetTimer() {
@@ -1756,9 +1858,23 @@ function resetTimer() {
     window.clearInterval(timerInterval);
     timerInterval = null;
   }
-  timerMode = "focus";
-  timerRemainingSec = focusMinutes * 60;
+  focusPhase = "focus";
+  timerRemainingSec = phaseMinutes("focus") * 60;
   renderFocus();
+  persistFocusState();
+}
+
+function skipPhase() {
+  timerRunning = false;
+  if (timerInterval !== null) {
+    window.clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  focusPhase = focusPhase === "focus" ? "short" : "focus";
+  timerRemainingSec = phaseTotalSec();
+  renderFocus();
+  persistFocusState();
+  toast(focusPhase === "focus" ? "已跳过，准备下一轮专注" : "已跳过，开始休息");
 }
 
 function tickTimer() {
@@ -1776,22 +1892,82 @@ async function completePhase() {
     timerInterval = null;
   }
   timerRunning = false;
-  beep();
-  if (timerMode === "focus") {
-    cyclesDone += 1;
+  if (settings.focusSound) beep();
+  if (focusPhase === "focus") {
+    roundDone += 1;
     void invoke<number>("add_focus_session", { day: toDateInputValue(Date.now()) }).catch(() => undefined);
-    void notify("专注完成", "休息 5 分钟，起来活动一下吧");
-    toast("专注完成，进入休息时间");
-    timerMode = "break";
-    timerRemainingSec = BREAK_MINUTES * 60;
+    const rounds = Math.max(2, settings.focusRounds || 4);
+    const isLong = roundDone % rounds === 0;
+    focusPhase = isLong ? "long" : "short";
+    const mins = phaseMinutes(focusPhase);
+    timerRemainingSec = mins * 60;
+    void notify("专注完成 🍅", isLong ? `完成 ${rounds} 个番茄，长休息 ${mins} 分钟，好好放松一下` : `休息 ${mins} 分钟，起来活动活动`);
+    toast(isLong ? "本轮番茄达成，进入长休息 🎉" : "专注完成，短休息一下");
     renderFocus();
-    startTimer();
+    void (async () => {
+      try {
+        focusStats = await invoke<Record<string, number>>("load_focus_stats");
+      } catch {
+        /* 忽略 */
+      }
+      updateFocusToday();
+    })();
+    persistFocusState();
+    if (settings.focusAutoBreak) startTimer();
   } else {
-    void notify("休息结束", "开始下一轮专注吧");
-    toast("休息结束，继续加油");
-    timerMode = "focus";
-    timerRemainingSec = focusMinutes * 60;
+    focusPhase = "focus";
+    timerRemainingSec = phaseMinutes("focus") * 60;
+    void notify("休息结束", "开始下一个番茄吧");
+    toast("休息结束，准备下一轮");
     renderFocus();
+    persistFocusState();
+    if (settings.focusAutoNext) startTimer();
+  }
+}
+
+async function restoreFocusState() {
+  try {
+    const st = await invoke<null | Record<string, unknown>>("load_focus_state");
+    if (!st || typeof st !== "object") return;
+    const mode = String(st.mode ?? "focus");
+    if (mode !== "focus" && mode !== "short" && mode !== "long") return;
+    focusPhase = mode as FocusPhase;
+    roundDone = Number(st.roundDone ?? 0) || 0;
+    focusTaskId = typeof st.taskId === "string" && st.taskId ? st.taskId : null;
+    const running = Boolean(st.running);
+    const endsAt = Number(st.endsAt ?? 0);
+    const remaining = Number(st.remaining ?? 0);
+    if (running && endsAt > Date.now() + 500) {
+      timerRunning = true;
+      timerEndsAt = endsAt;
+      timerRemainingSec = Math.max(0, Math.round((endsAt - Date.now()) / 1000));
+      timerInterval = window.setInterval(tickTimer, 250);
+      renderFocus();
+      toast("已恢复进行中的计时");
+      return;
+    }
+    if (running && endsAt > 0 && endsAt <= Date.now()) {
+      if (focusPhase === "focus") {
+        roundDone += 1;
+        const day = toDateInputValue(endsAt || Date.now());
+        void invoke<number>("add_focus_session", { day }).catch(() => undefined);
+        const rounds = Math.max(2, settings.focusRounds || 4);
+        focusPhase = roundDone % rounds === 0 ? "long" : "short";
+      } else {
+        focusPhase = "focus";
+      }
+      timerRemainingSec = phaseTotalSec();
+      renderFocus();
+      toast("上一阶段在应用关闭期间已完成");
+      persistFocusState();
+      return;
+    }
+    if (remaining > 0 && remaining < phaseTotalSec()) {
+      timerRemainingSec = Math.round(remaining);
+      renderFocus();
+    }
+  } catch {
+    /* 状态不可用则忽略 */
   }
 }
 
@@ -1800,10 +1976,11 @@ function setFocusPreset(minutes: number) {
     toast("计时进行中，请先暂停或重置", "error");
     return;
   }
-  focusMinutes = minutes;
-  timerMode = "focus";
-  timerRemainingSec = focusMinutes * 60;
+  settings.focusWork = minutes;
+  focusPhase = "focus";
+  timerRemainingSec = minutes * 60;
   renderFocus();
+  void persistSettings();
 }
 
 // ── 剪贴板历史 ─────────────────────────────────────────
@@ -1930,6 +2107,7 @@ async function updateStats() {
   const focusTotal = Object.values(focusStats).reduce((sum, n) => sum + n, 0);
   els.stFocusToday.textContent = String(focusToday);
   els.stFocusTotal.textContent = String(focusTotal);
+  updateFocusToday();
 
   els.heatGrid.innerHTML = "";
   const thisMonday = mondayOf(today0);
@@ -2488,6 +2666,86 @@ function bindEvents() {
   els.focusPresets.querySelectorAll<HTMLButtonElement>(".preset-chip").forEach((chip) => {
     chip.addEventListener("click", () => setFocusPreset(Number(chip.dataset.min ?? "25")));
   });
+  els.focusSkip.addEventListener("click", skipPhase);
+  els.focusSettingsToggle.addEventListener("click", () => {
+    const show = els.focusSettings.hidden;
+    els.focusSettings.hidden = !show;
+    els.focusSettingsToggle.setAttribute("aria-expanded", String(show));
+  });
+  els.focusTaskSelect.addEventListener("change", () => {
+    focusTaskId = els.focusTaskSelect.value || null;
+    persistFocusState();
+    const t = todos.find((x) => x.id === focusTaskId);
+    toast(t ? `已关联「${t.text.length > 16 ? `${t.text.slice(0, 16)}…` : t.text}」` : "已取消关联");
+  });
+  document.querySelectorAll<HTMLButtonElement>("#fs-short-chips .preset-chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      settings.focusShort = Number(chip.dataset.short ?? "5");
+      renderFocus();
+      void persistSettings();
+    });
+  });
+  document.querySelectorAll<HTMLButtonElement>("#fs-long-chips .preset-chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      settings.focusLong = Number(chip.dataset.long ?? "15");
+      renderFocus();
+      void persistSettings();
+    });
+  });
+  document.querySelectorAll<HTMLButtonElement>("#fs-rounds-chips .preset-chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      settings.focusRounds = Number(chip.dataset.rounds ?? "4");
+      renderFocus();
+      void persistSettings();
+    });
+  });
+  const wireFocusSwitch = (id: string, apply: (on: boolean) => void) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("click", () => {
+      const on = el.getAttribute("aria-checked") !== "true";
+      el.setAttribute("aria-checked", String(on));
+      apply(on);
+      void persistSettings();
+    });
+  };
+  wireFocusSwitch("fs-auto-break", (on) => {
+    settings.focusAutoBreak = on;
+  });
+  wireFocusSwitch("fs-auto-next", (on) => {
+    settings.focusAutoNext = on;
+  });
+  wireFocusSwitch("fs-sound", (on) => {
+    settings.focusSound = on;
+    if (on) beep();
+  });
+  document.querySelectorAll<HTMLElement>('.nav-item[data-view="focus"]').forEach((el) => {
+    el.addEventListener("click", () => {
+      populateFocusSelect();
+      updateFocusToday();
+      renderFocus();
+    });
+  });
+  // 测试钩子：仅当 localStorage 标记开启（E2E 快速走完阶段用）
+  if (localStorage.getItem("simple-todo.dev.focus") === "1") {
+    (window as unknown as Record<string, unknown>).__focusTest = {
+      finish: () => {
+        if (timerRunning) {
+          timerEndsAt = Date.now() - 1500;
+        } else {
+          timerRemainingSec = 0;
+          void completePhase();
+        }
+      },
+      state: () => ({
+        phase: focusPhase,
+        running: timerRunning,
+        remaining: timerRemainingSec,
+        round: roundDone,
+        taskId: focusTaskId,
+      }),
+    };
+  }
 
   // 剪贴板
   els.clipToggle.addEventListener("click", () => {
@@ -2715,6 +2973,15 @@ async function init() {
   });
 
   renderFocus();
+  void restoreFocusState();
+  void (async () => {
+    try {
+      focusStats = await invoke<Record<string, number>>("load_focus_stats");
+    } catch {
+      /* 忽略 */
+    }
+    updateFocusToday();
+  })();
   window.setInterval(() => void pollClipboard(), 1500);
   window.setTimeout(() => void pollClipboard(), 400);
 

@@ -250,6 +250,25 @@
     50%{transform:translate3d(-6%,7%,0) scale(.92)}
     100%{transform:translate3d(4%,-5%,0) scale(1.12)}}
   @media (prefers-color-scheme: dark){ .aurora i{opacity:.32} }
+  /* 下载选择弹层 */
+  .dl-modal{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(18,18,26,.44);backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);opacity:0;transition:opacity .22s ease}
+  .dl-modal.show{opacity:1}
+  .dl-sheet{position:relative;width:min(500px,100%);background:var(--card);border:1px solid var(--line-2);border-radius:24px;padding:30px 28px 22px;box-shadow:var(--shadow-lg);transform:translateY(16px) scale(.96);transition:transform .3s cubic-bezier(.22,1.28,.36,1)}
+  .dl-modal.show .dl-sheet{transform:none}
+  .dl-sheet h3{margin:0;font-size:22px;letter-spacing:-.01em;font-weight:700}
+  .dl-sub{margin:8px 0 16px;font-size:13px;color:var(--ink-2)}
+  .dl-close{position:absolute;top:16px;right:16px;width:30px;height:30px;border-radius:999px;border:1px solid var(--line);background:var(--bg-soft);color:var(--ink-2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .2s cubic-bezier(.34,1.4,.64,1),background .2s}
+  .dl-close:hover{transform:scale(1.08);background:var(--line)}
+  .dl-option{display:flex;align-items:center;gap:14px;padding:15px 16px;border:1px solid var(--line);border-radius:16px;margin-top:10px;text-decoration:none;color:inherit;background:var(--bg);transition:transform .28s cubic-bezier(.34,1.4,.64,1),border-color .25s,box-shadow .25s}
+  .dl-option:hover{transform:translateY(-2px);border-color:var(--line-2);box-shadow:var(--shadow-md)}
+  .dl-ico{flex:none;width:42px;height:42px;border-radius:12px;background:var(--grad);display:flex;align-items:center;justify-content:center;color:#fff}
+  .dl-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+  .dl-info b{font-size:15px;font-weight:600}
+  .dl-info em{font-style:normal;font-size:12.5px;color:var(--ink-2)}
+  .dl-arrow{flex:none;color:var(--ink-3);transition:transform .25s cubic-bezier(.34,1.4,.64,1);font-size:18px}
+  .dl-option:hover .dl-arrow{transform:translateY(3px)}
+  .dl-foot{margin:16px 0 0;font-size:11.5px;line-height:1.7;color:var(--ink-3)}
+  .dl-foot a{color:var(--brand-2);text-decoration:none}
 </style>
 </head>
 <body>
@@ -262,7 +281,7 @@
     <a href="#quality">品质</a>
     <a href="#download">下载</a>
   </div>
-  <a class="nav-cta" href="/download/zhaoxi-latest-portable.exe">下载 Windows 版</a>
+  <a class="nav-cta js-dl" href="/download/zhaoxi-latest-portable.exe">下载 Windows 版</a>
 </nav>
 
 <header class="hero" id="top">
@@ -273,7 +292,7 @@
   <div class="tagline reveal d5">朝有所为，夕有所成。</div>
   <p class="sub reveal d6">一款安静、体面的 Windows 效率工作台。<br>待办、便签与专注，收进一处；所有数据，只留在你自己的电脑。</p>
   <div class="cta-row reveal d7">
-    <a class="btn btn-primary" href="/download/zhaoxi-latest-portable.exe">下载 Windows 版</a>
+    <a class="btn btn-primary js-dl" href="/download/zhaoxi-latest-portable.exe">下载 Windows 版</a>
     <a class="btn btn-ghost" href="#features">进一步了解
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
     </a>
@@ -379,7 +398,7 @@
     <h2 class="reveal">下载朝夕</h2>
     <p class="lead reveal" style="margin-left:auto;margin-right:auto">朝有所为，夕有所成。<br>把你的每一天，安放得井井有条。</p>
     <div class="cta-row reveal">
-      <a class="btn btn-primary" href="/download/zhaoxi-latest-portable.exe">下载 Windows 版</a>
+      <a class="btn btn-primary js-dl" href="/download/zhaoxi-latest-portable.exe">下载 Windows 版</a>
     </div>
     <div class="dl-note reveal">
       国内直连下载 · 提供「便携版」（单文件，双击即用）与「安装版」（开始菜单 + 卸载）<br>
@@ -391,6 +410,28 @@
     </div>
   </div>
 </section>
+
+<!-- 下载选择弹层 -->
+<div class="dl-modal" id="dl-modal" hidden>
+  <div class="dl-sheet" role="dialog" aria-modal="true" aria-label="下载朝夕">
+    <button class="dl-close" id="dl-close" type="button" aria-label="关闭">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2.7 2.7l6.6 6.6M9.3 2.7L2.7 9.3"/></svg>
+    </button>
+    <h3>下载朝夕 · Windows</h3>
+    <p class="dl-sub">选择适合你的版本 · 从官方服务器直连下载</p>
+    <a class="dl-option" href="/download/zhaoxi-latest-portable.exe">
+      <span class="dl-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v10M12 14l-4-4M12 14l4-4M5 19h14"/></svg></span>
+      <span class="dl-info"><b>便携版</b><em>单文件免安装，双击即用 · 约 4.8 MB</em></span>
+      <span class="dl-arrow">⇣</span>
+    </a>
+    <a class="dl-option" href="/download/zhaoxi-latest-setup.exe">
+      <span class="dl-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="M12 8.5v5M12 13.5l-2.2-2.2M12 13.5l2.2-2.2"/></svg></span>
+      <span class="dl-info"><b>安装版</b><em>开始菜单快捷方式，支持卸载 · 约 1.7 MB</em></span>
+      <span class="dl-arrow">⇣</span>
+    </a>
+    <p class="dl-foot">未做数字签名，首次运行如遇 SmartScreen 提示请选择「仍要运行」<br><a href="https://github.com/btrencai/zhaoxi/releases">GitHub 备用通道（海外）</a></p>
+  </div>
+</div>
 
 <footer>
   <div class="foot">
@@ -466,6 +507,15 @@
 
   document.body.classList.add('loaded');
   document.getElementById('year').textContent = new Date().getFullYear();
+
+  // ── 下载选择弹层 ──
+  const dlModal = document.getElementById('dl-modal');
+  const openDl = (e) => { e.preventDefault(); dlModal.hidden = false; requestAnimationFrame(() => dlModal.classList.add('show')); };
+  const closeDl = () => { dlModal.classList.remove('show'); setTimeout(() => { dlModal.hidden = true; }, 240); };
+  document.querySelectorAll('.js-dl').forEach((el) => el.addEventListener('click', openDl));
+  document.getElementById('dl-close').addEventListener('click', closeDl);
+  dlModal.addEventListener('click', (e) => { if (e.target === dlModal) closeDl(); });
+  window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !dlModal.hidden) closeDl(); });
 </script>
 </body>
 </html>

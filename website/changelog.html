@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>document.documentElement.classList.add('js')</script>
+<title>更新日志 · 朝夕</title>
+<meta name="description" content="朝夕的版本更新记录：每一次变化，都写在这里。">
+<link rel="icon" href="assets/icon.png">
+<link rel="preload" href="assets/notoserifsc-sub.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face{font-family:"Noto Serif SC"; src:url("assets/notoserifsc-sub.woff2") format("woff2"); font-weight:600; font-display:swap}
+  :root{
+    --ink:#1d1d1f; --ink-2:#4d4d51; --ink-3:#77777c;
+    --bg:#ffffff; --bg-soft:#f5f5f7; --card:#ffffff;
+    --line:rgba(0,0,0,.08); --line-2:rgba(0,0,0,.12);
+    --brand:#4f45d0; --brand-2:#7d6efb; --warm:#ffb46b;
+    --grad:linear-gradient(135deg,#7d6efb 0%,#635be8 55%,#4f45d0 100%);
+    --shadow-lg:0 30px 90px rgba(29,29,60,.16);
+    --shadow-md:0 16px 50px rgba(29,29,60,.12);
+    --nav-bg:rgba(255,255,255,.72);
+    --serif:"Noto Serif SC","Songti SC","STSong","SimSun",serif;
+    --hero-veil:radial-gradient(1200px 620px at 22% -12%, rgba(125,110,251,.20), transparent 62%),
+                radial-gradient(980px 560px at 92% -6%, rgba(255,180,107,.16), transparent 58%);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ink:#f5f5f7; --ink-2:#a1a1a6; --ink-3:#86868b;
+      --bg:#000000; --bg-soft:#0b0b0f; --card:#121218;
+      --line:rgba(255,255,255,.10); --line-2:rgba(255,255,255,.16);
+      --nav-bg:rgba(10,10,14,.7);
+      --shadow-lg:0 30px 90px rgba(0,0,0,.6);
+      --shadow-md:0 16px 50px rgba(0,0,0,.5);
+      --hero-veil:radial-gradient(1200px 620px at 22% -12%, rgba(125,110,251,.28), transparent 62%),
+                  radial-gradient(980px 560px at 92% -6%, rgba(255,180,107,.14), transparent 58%);
+    }
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html{scroll-behavior:smooth; scroll-padding-top:88px}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",Roboto,sans-serif;
+    background:var(--bg); color:var(--ink);
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  }
+  ::selection{background:rgba(99,91,232,.25)}
+  a{color:inherit; text-decoration:none}
+  img{max-width:100%; display:block}
+
+  /* ── 导航 ── */
+  nav{
+    position:fixed; inset:0 0 auto; z-index:100; height:56px;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 clamp(20px,4vw,44px);
+    background:var(--nav-bg);
+    -webkit-backdrop-filter:saturate(180%) blur(20px); backdrop-filter:saturate(180%) blur(20px);
+    border-bottom:1px solid transparent; transition:border-color .3s;
+  }
+  nav.scrolled{border-bottom-color:var(--line)}
+  .nav-l{display:flex; align-items:center; gap:10px; font-weight:700; font-size:15.5px; letter-spacing:.02em}
+  .nav-l img{width:22px; height:22px; border-radius:6px; box-shadow:0 2px 8px rgba(79,69,208,.35)}
+  .nav-links{display:flex; gap:28px; font-size:13.5px; color:var(--ink-2)}
+  .nav-links a:hover{color:var(--ink)}
+  .nav-links a.on{color:var(--ink); font-weight:600}
+  .nav-cta{
+    font-size:12.5px; font-weight:600; color:#fff; background:var(--grad);
+    padding:6.5px 15px; border-radius:980px; box-shadow:0 6px 18px rgba(79,69,208,.35);
+    transition:transform .25s cubic-bezier(.34,1.4,.64,1), box-shadow .25s;
+  }
+  .nav-cta:hover{transform:translateY(-1px) scale(1.02); box-shadow:0 10px 26px rgba(79,69,208,.45)}
+  .cta-short{display:none}
+  @media (max-width:760px){ .nav-links{display:none} }
+
+  /* ── 按钮 ── */
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:15px; font-weight:600; border-radius:980px; padding:13px 28px;
+    transition:transform .25s cubic-bezier(.34,1.4,.64,1), box-shadow .25s, background .25s, border-color .25s, color .25s;
+  }
+  .btn-primary{color:#fff; background:var(--grad); box-shadow:0 10px 30px rgba(79,69,208,.4)}
+  .btn-primary:hover{transform:translateY(-2px) scale(1.02); box-shadow:0 16px 40px rgba(79,69,208,.5)}
+  .btn-line{color:var(--ink-2); border:1px solid var(--line-2); background:var(--card)}
+  .btn-line:hover{color:var(--ink); border-color:var(--ink-3); transform:translateY(-2px)}
+
+  /* ── 页脚 ── */
+  footer{padding:48px 24px 60px; border-top:1px solid var(--line); font-size:13px; line-height:1.7; color:var(--ink-3)}
+  .foot{max-width:1020px; margin:0 auto; display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap}
+  .foot a:hover{color:var(--ink); text-decoration:underline; text-underline-offset:3px}
+  .foot-l{display:flex; gap:18px; flex-wrap:wrap}
+
+  /* ── 滚动显现 ── */
+  html.js .reveal{opacity:0; transform:translateY(26px);
+    transition:opacity .48s ease, transform .62s cubic-bezier(.22,1.28,.36,1)}
+  html.js .reveal.in{opacity:1; transform:none}
+  html.js .d1{transition-delay:.04s}
+  html.js .d2{transition-delay:.09s}
+  html.js .d3{transition-delay:.14s}
+  html.js .d4{transition-delay:.19s}
+  html.js nav{opacity:0; transform:translateY(-8px); transition:opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1), border-color .3s}
+  html.js body.loaded nav{opacity:1; transform:none}
+
+  /* ═══════════ 更新日志 ═══════════ */
+  .cl-head{padding:128px 24px 10px; text-align:center; background-image:var(--hero-veil)}
+  .kicker{
+    font-size:13px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--brand-2); margin-bottom:14px;
+  }
+  .cl-head h1{font-family:var(--serif); font-size:clamp(40px,6vw,60px); font-weight:600; letter-spacing:.01em; line-height:1.15}
+  .cl-head .sub{margin:16px auto 0; max-width:540px; font-size:15.5px; line-height:1.8; color:var(--ink-2)}
+  .cl-jump{margin-top:28px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
+  .cl-jump a{
+    font-size:12.5px; font-weight:600; color:var(--ink-2); border:1px solid var(--line-2);
+    padding:6.5px 15px; border-radius:980px; font-variant-numeric:tabular-nums;
+    transition:color .25s, border-color .25s, transform .25s cubic-bezier(.34,1.4,.64,1);
+  }
+  .cl-jump a:hover{color:var(--ink); border-color:var(--ink-3); transform:translateY(-1px)}
+  .cl-jump a.new{color:#fff; background:var(--grad); border-color:transparent; box-shadow:0 6px 18px rgba(79,69,208,.35)}
+
+  .cl-list{position:relative; max-width:780px; margin:38px auto 0; padding:6px 24px 88px}
+  .cl-item{position:relative; padding-left:48px; padding-bottom:36px}
+  .cl-item:last-child{padding-bottom:0}
+  .cl-item::before{
+    content:""; position:absolute; left:13px; top:10px; width:10px; height:10px; border-radius:50%;
+    background:var(--bg); border:2.5px solid color-mix(in srgb, var(--ink-3) 55%, transparent); transition:border-color .3s;
+  }
+  .cl-item::after{
+    content:""; position:absolute; left:17.5px; top:27px; bottom:-4px; width:2px;
+    background:linear-gradient(180deg, color-mix(in srgb, var(--ink-3) 38%, transparent), var(--line));
+  }
+  .cl-item:last-child::after{display:none}
+  .cl-item.now::before{border-color:transparent; background:var(--grad); box-shadow:0 0 0 5px rgba(99,91,232,.14)}
+  .cl-ver{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap}
+  .cl-ver b{font-family:var(--serif); font-size:clamp(27px,3.4vw,34px); font-weight:600; letter-spacing:.01em; line-height:1.1}
+  .cl-ver .tag{
+    font-size:11px; font-weight:700; color:#fff; background:var(--grad);
+    padding:4px 11px; border-radius:980px; letter-spacing:.08em; transform:translateY(-4px);
+    box-shadow:0 5px 14px rgba(79,69,208,.3);
+  }
+  .cl-ver time{margin-left:auto; font-size:13px; color:var(--ink-3); font-variant-numeric:tabular-nums}
+  .cl-card{
+    margin-top:16px; background:var(--card); border:1px solid var(--line); border-radius:20px;
+    padding:24px 28px; box-shadow:0 1px 2px rgba(29,29,60,.04), 0 14px 44px rgba(29,29,60,.07);
+    transition:transform .3s cubic-bezier(.34,1.3,.64,1), box-shadow .3s, border-color .3s;
+  }
+  .cl-card:hover{transform:translateY(-2px)}
+  .cl-item.now .cl-card{
+    border-color:rgba(99,91,232,.34);
+    box-shadow:0 2px 4px rgba(79,69,208,.06), 0 22px 64px rgba(79,69,208,.13);
+  }
+  .cl-card ul{list-style:none; display:grid; gap:10px}
+  .cl-card li{display:flex; gap:11px; font-size:14.5px; line-height:1.72; color:var(--ink-2)}
+  .cl-card li b{color:var(--ink); font-weight:600}
+  .cl-card li .dot{width:7px; height:7px; border-radius:50%; background:var(--grad); flex:none; transform:translateY(.62em)}
+
+  .cl-cta{margin-top:58px; text-align:center}
+  .cl-cta h2{font-family:var(--serif); font-size:clamp(26px,3.6vw,34px); font-weight:600; letter-spacing:.01em; margin-bottom:24px}
+  .cl-cta .row{display:flex; gap:14px; justify-content:center; flex-wrap:wrap}
+
+  /* ═══════════ 手机版 ═══════════ */
+  @media (max-width:640px){
+    nav{height:52px; padding:0 18px}
+    .nav-cta{font-size:12.5px; padding:7px 14px}
+    .cta-full{display:none}
+    .cta-short{display:inline}
+    .cl-head{padding:104px 18px 6px}
+    .cl-head h1{font-size:clamp(33px,10vw,42px)}
+    .cl-head .sub{font-size:14px}
+    .cl-jump{margin-top:22px; gap:8px}
+    .cl-jump a{font-size:12px; padding:5.5px 12px}
+    .cl-list{margin-top:34px; padding:4px 18px 68px}
+    .cl-item{padding-left:32px; padding-bottom:32px}
+    .cl-item::before{left:6px; top:8px; width:9px; height:9px}
+    .cl-item::after{left:10px; top:24px}
+    .cl-ver b{font-size:26px}
+    .cl-ver time{margin-left:0; width:100%; margin-top:2px; font-size:12.5px}
+    .cl-card{margin-top:12px; padding:18px 16px; border-radius:16px}
+    .cl-card li{font-size:13.5px; gap:9px}
+    .cl-cta{margin-top:42px}
+    .cl-cta .row{flex-direction:column; align-items:center; gap:10px}
+    .cl-cta .btn{width:min(320px,86vw); justify-content:center}
+    footer{padding:34px 18px 44px}
+    .foot{flex-direction:column; gap:12px}
+  }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a class="nav-l" href="index.html"><img src="assets/icon.png" alt="朝夕">朝夕</a>
+  <div class="nav-links">
+    <a href="index.html#features">功能</a>
+    <a href="index.html#sync">云同步</a>
+    <a href="index.html#quality">品质</a>
+    <a href="changelog.html" class="on">更新日志</a>
+    <a href="index.html#download">下载</a>
+  </div>
+  <a class="nav-cta" href="/download/zhaoxi-latest-portable.exe"><span class="cta-full">下载 Windows 版</span><span class="cta-short">下载</span></a>
+</nav>
+
+<header class="cl-head">
+  <div class="kicker reveal d1">Changelog</div>
+  <h1 class="reveal d2">更新日志</h1>
+  <p class="sub reveal d3">每一次变化，都写在这里。<br>应用内「版本与更新」与本页保持同步。</p>
+  <div class="cl-jump reveal d4">
+    <a class="new" href="#v120">v1.2.0</a>
+    <a href="#v110">v1.1.0</a>
+    <a href="#v100">v1.0.0</a>
+  </div>
+</header>
+
+<main class="cl-list">
+  <article class="cl-item now reveal" id="v120">
+    <div class="cl-ver"><b>v1.2.0</b><span class="tag">最新</span><time>2026 年 9 月 12 日</time></div>
+    <div class="cl-card"><ul>
+      <li><span class="dot"></span><span><b>番茄钟全面升级</b>：短休息 / 长休息 / 长休间隔均可配置（每 N 个番茄进入长休息）</span></li>
+      <li><span class="dot"></span><span>新增 <b>自动流转</b>：专注结束自动开始休息、休息后自动开启下一轮，可分别开关</span></li>
+      <li><span class="dot"></span><span>新增 <b>关联待办</b>：选一条待办作为本次专注目标，专注中实时显示</span></li>
+      <li><span class="dot"></span><span>新增 <b>本轮进度圆点</b> 与今日专注概览；计时跨重启自动恢复</span></li>
+      <li><span class="dot"></span><span>新增 跳过本阶段；专注设置收纳进面板，界面更清爽</span></li>
+      <li><span class="dot"></span><span>官网下载升级为 <b>双选项</b>：便携版 / 安装版任选</span></li>
+      <li><span class="dot"></span><span>官网全面焕新：<b>「活界面」动态演示</b>、思源宋体排版与手机版专属设计</span></li>
+    </ul></div>
+  </article>
+
+  <article class="cl-item reveal" id="v110">
+    <div class="cl-ver"><b>v1.1.0</b><time>2026 年 9 月 12 日</time></div>
+    <div class="cl-card"><ul>
+      <li><span class="dot"></span><span>新增 <b>「版本与更新」</b>：一键检查最新发布，发现新版本可直接下载</span></li>
+      <li><span class="dot"></span><span>版本检测与下载改走 <b>官方服务器通道（国内直连）</b>，GitHub Releases 作为海外备用源</span></li>
+      <li><span class="dot"></span><span>新增 <b>「更新日志」</b>：应用内随时查阅历次版本的主要变化</span></li>
+      <li><span class="dot"></span><span>新增「打开外链」能力：调用系统默认浏览器（仅放行 http/https，安全校验）</span></li>
+      <li><span class="dot"></span><span>版本号体系统一：应用内、安装包与仓库标签保持一致的语义化版本</span></li>
+    </ul></div>
+  </article>
+
+  <article class="cl-item reveal" id="v100">
+    <div class="cl-ver"><b>v1.0.0</b><time>2026 年 9 月 11 日</time></div>
+    <div class="cl-card"><ul>
+      <li><span class="dot"></span><span><b>首个正式版本</b>：待办事项、便签、专注（番茄钟）、剪贴板历史与统计</span></li>
+      <li><span class="dot"></span><span><b>本地优先</b>：数据只存本机 %APPDATA%，原子写入 + 损坏自愈</span></li>
+      <li><span class="dot"></span><span>邮箱账号体系（注册需邮箱验证码）与可选云同步</span></li>
+      <li><span class="dot"></span><span>系统托盘、全局快捷键 Ctrl+Alt+Space、开机自启、深浅色跟随系统</span></li>
+      <li><span class="dot"></span><span>Tauri 2 + Rust + 系统 WebView2 · 无捆绑内核 · 主程序约 5 MB</span></li>
+    </ul></div>
+  </article>
+
+  <section class="cl-cta">
+    <div class="kicker reveal d1">立即开始</div>
+    <h2 class="reveal d2">把今天，安放好。</h2>
+    <div class="row reveal d3">
+      <a class="btn btn-primary" href="/download/zhaoxi-latest-portable.exe">下载便携版</a>
+      <a class="btn btn-line" href="/download/zhaoxi-latest-setup.exe">下载安装版</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="foot">
+    <div class="foot-l">
+      <span>朝夕 · 朝有所为，夕有所成</span>
+      <span>© <span id="year">2026</span></span>
+    </div>
+    <div class="foot-l">
+      <a href="https://github.com/btrencai/zhaoxi">GitHub</a>
+      <a href="changelog.html">更新日志</a>
+      <a href="https://github.com/btrencai/zhaoxi#服务端云同步">服务端部署</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const nav = document.getElementById('nav');
+  const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
+  onScroll(); window.addEventListener('scroll', onScroll, {passive:true});
+
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      e.target.classList.add('in');
+      io.unobserve(e.target);
+    }
+  }, {threshold:.12, rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  document.body.classList.add('loaded');
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

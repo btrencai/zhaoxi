@@ -31,11 +31,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # 可选：在仓库 Settings → Variables 里设置 CLOUD_SERVER（内置官方服务器地址，构建时注入客户端）
+      # 可选：在仓库 Settings → Secrets and variables → Actions → Secrets 里添加 CLOUD_SERVER
+      #（值 = 你的官方服务器地址，构建时注入客户端；Secret 加密存储、公开仓库不泄露）
       - name: Build (Tauri)
         run: npx tauri build
         env:
-          CLOUD_SERVER: ${{ vars.CLOUD_SERVER }}
+          CLOUD_SERVER: ${{ secrets.CLOUD_SERVER || vars.CLOUD_SERVER }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

@@ -6,6 +6,13 @@
 <script>document.documentElement.classList.add('js')</script>
 <title>朝夕 —— 本地优先的 Windows 效率工作台</title>
 <meta name="description" content="朝夕：一款安静、体面的 Windows 效率工作台。待办、便签、专注与你的全部数据，始终留在你自己的电脑里。">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="朝夕">
+<meta property="og:title" content="朝夕 —— 本地优先的 Windows 效率工作台">
+<meta property="og:description" content="待办、便签与专注，收进一处；所有数据，只留在你自己的电脑。">
+<meta property="og:url" content="https://zhaoxi.btrencai.top/">
+<meta property="og:image" content="https://zhaoxi.btrencai.top/assets/og-cover.png">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="assets/icon.png">
 <link rel="preload" href="assets/notoserifsc-sub.woff2" as="font" type="font/woff2" crossorigin>
 <style>
@@ -473,6 +480,34 @@
     .m-ctx{display:none}
   }
 
+
+  /* ═══════════ 常见问题 ═══════════ */
+  .faq-head{text-align:center}
+  .faq-list{max-width:720px; margin:44px auto 0}
+  .faq-item{border-top:1px solid var(--line)}
+  .faq-item:last-child{border-bottom:1px solid var(--line)}
+  .faq-q{
+    width:100%; display:flex; align-items:center; justify-content:space-between; gap:18px;
+    padding:24px 4px; background:none; border:0; cursor:pointer;
+    font-family:inherit; font-size:16.5px; font-weight:600; color:var(--ink); text-align:left; letter-spacing:.005em;
+    transition:color .25s;
+  }
+  .faq-q:hover{color:var(--brand)}
+  .faq-ico{flex:none; width:26px; height:26px; border-radius:50%; display:grid; place-items:center; background:rgba(99,91,232,.1); color:var(--brand-2); transition:transform .45s cubic-bezier(.22,1.28,.36,1), background .25s}
+  .faq-ico svg{width:12px; height:12px; display:block}
+  .faq-item.open .faq-ico{transform:rotate(45deg); background:rgba(99,91,232,.18)}
+  .faq-a{display:grid; grid-template-rows:0fr; transition:grid-template-rows .5s cubic-bezier(.22,1,.36,1)}
+  .faq-item.open .faq-a{grid-template-rows:1fr}
+  .faq-a-in{overflow:hidden}
+  .faq-a p{margin:0; padding:0 46px 26px 4px; font-size:14.5px; line-height:1.85; color:var(--ink-2)}
+  .faq-a b{color:var(--ink); font-weight:600}
+  @media (max-width:640px){
+    .faq-list{margin-top:30px}
+    .faq-q{font-size:15px; padding:19px 2px; gap:12px}
+    .faq-ico{width:23px; height:23px}
+    .faq-a p{padding:0 8px 20px 2px; font-size:13.5px; line-height:1.8}
+  }
+
 </style>
 </head>
 <body>
@@ -483,6 +518,7 @@
     <a href="#features">功能</a>
     <a href="#sync">云同步</a>
     <a href="#quality">品质</a>
+    <a href="#faq">常见问题</a>
     <a href="changelog.html">更新日志</a>
     <a href="#download">下载</a>
   </div>
@@ -597,6 +633,41 @@
   </div>
 </section>
 
+<section id="faq">
+  <div class="wrap">
+    <div class="faq-head">
+      <div class="kicker reveal d1">常见问题</div>
+      <h2 class="reveal d2">你可能想问的。</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item open reveal d1">
+        <button class="faq-q" type="button" aria-expanded="true"><span>朝夕是免费的吗？</span><span class="faq-ico"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 1.6v8.8M1.6 6h8.8"/></svg></span></button>
+        <div class="faq-a"><div class="faq-a-in"><p>完全免费。没有内购、没有广告，也没有「高级版」解锁限制 —— 我们希望它安静地待在角落里，帮你把事做好。</p></div></div>
+      </div>
+      <div class="faq-item reveal d2">
+        <button class="faq-q" type="button" aria-expanded="false"><span>我的数据存在哪里？</span><span class="faq-ico"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 1.6v8.8M1.6 6h8.8"/></svg></span></button>
+        <div class="faq-a"><div class="faq-a-in"><p>默认只保存在<b>你自己的电脑</b>上（本地数据目录，原子写入 + 损坏自愈）。云同步是可选功能：不开启时，断网、服务器下线都不影响使用。</p></div></div>
+      </div>
+      <div class="faq-item reveal d3">
+        <button class="faq-q" type="button" aria-expanded="false"><span>换电脑后数据怎么办？</span><span class="faq-ico"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 1.6v8.8M1.6 6h8.8"/></svg></span></button>
+        <div class="faq-a"><div class="faq-a-in"><p>登录同一账号并开启云同步，一切如约而至；也可以直接<b>拷贝数据目录</b>到新电脑 —— 完全不依赖任何服务器。</p></div></div>
+      </div>
+      <div class="faq-item reveal d4">
+        <button class="faq-q" type="button" aria-expanded="false"><span>支持哪些系统？</span><span class="faq-ico"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 1.6v8.8M1.6 6h8.8"/></svg></span></button>
+        <div class="faq-a"><div class="faq-a-in"><p>目前提供 <b>Windows 10 / 11</b> 版（便携版与安装版二选一）。基于 Tauri 2 + 系统 WebView2 构建，主程序约 5 MB，无捆绑内核。</p></div></div>
+      </div>
+      <div class="faq-item reveal d5">
+        <button class="faq-q" type="button" aria-expanded="false"><span>为什么安装时提示「未知发布者」？</span><span class="faq-ico"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 1.6v8.8M1.6 6h8.8"/></svg></span></button>
+        <div class="faq-a"><div class="faq-a-in"><p>安装包未做数字签名，Windows SmartScreen 可能提示风险，选择「<b>仍要运行</b>」即可。全部代码开源在 GitHub，可自行审查与构建。</p></div></div>
+      </div>
+      <div class="faq-item reveal d6">
+        <button class="faq-q" type="button" aria-expanded="false"><span>怎么彻底删除朝夕？</span><span class="faq-ico"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 1.6v8.8M1.6 6h8.8"/></svg></span></button>
+        <div class="faq-a"><div class="faq-a-in"><p>便携版直接删除程序文件；安装版在「设置 → 应用」中卸载。再删除本地数据目录，即可清空全部数据 —— 不留任何残留。</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="download" id="download">
   <div class="wrap">
     <img class="hero-icon reveal" src="assets/icon.png" alt="朝夕">
@@ -647,6 +718,7 @@
     </div>
     <div class="foot-l">
       <a href="https://github.com/btrencai/zhaoxi">GitHub</a>
+      <a href="#faq">常见问题</a>
       <a href="changelog.html">更新日志</a>
       <a href="https://github.com/btrencai/zhaoxi#服务端云同步">服务端部署</a>
     </div>
@@ -1041,6 +1113,16 @@
       minis.forEach(startScene);
     }
   })();
+
+
+  // ── 常见问题（手风琴）──
+  document.querySelectorAll('.faq-item').forEach((item) => {
+    const btn = item.querySelector('.faq-q');
+    btn.addEventListener('click', () => {
+      const open = item.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(open));
+    });
+  });
 
 </script>
 </body>

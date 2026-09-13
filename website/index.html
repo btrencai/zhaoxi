@@ -3,17 +3,65 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<link rel="canonical" href="https://zhaoxi.btrencai.top/">
 <script>document.documentElement.classList.add('js')</script>
 <title>朝夕 —— 本地优先的 Windows 效率工作台</title>
-<meta name="description" content="朝夕：一款安静、体面的 Windows 效率工作台。待办、便签、专注与你的全部数据，始终留在你自己的电脑里。">
+<meta name="description" content="朝夕：本地优先的 Windows 效率工作台。待办、便签与专注保留完整本机副本，可选官方或自建服务器同步待办与便签。">
 <meta property="og:type" content="website">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:site_name" content="朝夕">
 <meta property="og:title" content="朝夕 —— 本地优先的 Windows 效率工作台">
-<meta property="og:description" content="待办、便签与专注，收进一处；所有数据，只留在你自己的电脑。">
+<meta property="og:description" content="待办、便签与专注保留完整本机副本；需要时，让待办与便签在多台电脑间同步。">
 <meta property="og:url" content="https://zhaoxi.btrencai.top/">
 <meta property="og:image" content="https://zhaoxi.btrencai.top/assets/og-cover.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="assets/icon.png">
+<link rel="apple-touch-icon" href="assets/icon.png">
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@graph":[
+    {
+      "@type":"WebSite",
+      "@id":"https://zhaoxi.btrencai.top/#website",
+      "name":"朝夕",
+      "url":"https://zhaoxi.btrencai.top/",
+      "inLanguage":"zh-CN"
+    },
+    {
+      "@type":"SoftwareApplication",
+      "@id":"https://zhaoxi.btrencai.top/#app",
+      "name":"朝夕",
+      "alternateName":"Zhaoxi",
+      "description":"本地优先的 Windows 效率工作台，集待办、便签、专注与可控云同步于一体。",
+      "url":"https://zhaoxi.btrencai.top/",
+      "downloadUrl":"https://zhaoxi.btrencai.top/download/zhaoxi-latest-portable.exe",
+      "sameAs":"https://github.com/btrencai/zhaoxi",
+      "operatingSystem":"Windows 10, Windows 11",
+      "applicationCategory":"ProductivityApplication",
+      "softwareVersion":"1.2.0",
+      "fileSize":"5 MB",
+      "offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"}
+    },
+    {
+      "@type":"FAQPage",
+      "@id":"https://zhaoxi.btrencai.top/#faq",
+      "mainEntity":[
+        {"@type":"Question","name":"朝夕是免费的吗？","acceptedAnswer":{"@type":"Answer","text":"完全免费，没有内购、广告或高级版解锁限制。"}},
+        {"@type":"Question","name":"我的数据存在哪里？","acceptedAnswer":{"@type":"Answer","text":"完整数据始终保存在本机。开启同步后，待办、便签和删除标记会经 HTTPS 保存到所选服务器；专注统计、设置与剪贴板历史不参与同步。"}},
+        {"@type":"Question","name":"换电脑后数据怎么办？","acceptedAnswer":{"@type":"Answer","text":"登录同一账号并开启云同步即可恢复待办与便签，也可以直接复制本机数据目录。"}},
+        {"@type":"Question","name":"支持哪些系统？","acceptedAnswer":{"@type":"Answer","text":"目前支持 Windows 10 和 Windows 11，提供便携版与安装版。"}},
+        {"@type":"Question","name":"为什么安装时提示未知发布者？","acceptedAnswer":{"@type":"Answer","text":"当前安装包未做数字签名，Windows SmartScreen 可能显示未知发布者；代码已在 GitHub 开源，可自行审查与构建。"}},
+        {"@type":"Question","name":"怎么彻底删除朝夕？","acceptedAnswer":{"@type":"Answer","text":"便携版可直接删除程序，安装版可从 Windows 设置卸载；再删除本机应用数据目录即可清理本机数据。"}}
+      ]
+    }
+  ]
+}
+</script>
 <link rel="preload" href="assets/notoserifsc-sub.woff2" as="font" type="font/woff2" crossorigin>
 <style>
   @font-face{font-family:"Noto Serif SC"; src:url("assets/notoserifsc-sub.woff2") format("woff2"); font-weight:600; font-display:swap}
@@ -52,6 +100,9 @@
   ::selection{background:rgba(99,91,232,.25)}
   a{color:inherit; text-decoration:none}
   img{max-width:100%; display:block}
+  :where(a,button):focus-visible{outline:3px solid rgba(99,91,232,.45);outline-offset:4px;border-radius:8px}
+  .skip{position:fixed;left:18px;top:10px;z-index:300;transform:translateY(-140%);padding:9px 14px;border-radius:10px;background:var(--ink);color:var(--bg);font-size:13px;font-weight:650;transition:transform .2s}
+  .skip:focus{transform:none}
 
   /* ── 导航 ── */
   nav{
@@ -496,11 +547,12 @@
   .faq-ico{flex:none; width:26px; height:26px; border-radius:50%; display:grid; place-items:center; background:rgba(99,91,232,.1); color:var(--brand-2); transition:transform .45s cubic-bezier(.22,1.28,.36,1), background .25s}
   .faq-ico svg{width:12px; height:12px; display:block}
   .faq-item.open .faq-ico{transform:rotate(45deg); background:rgba(99,91,232,.18)}
-  .faq-a{display:grid; grid-template-rows:0fr; transition:grid-template-rows .5s cubic-bezier(.22,1,.36,1)}
-  .faq-item.open .faq-a{grid-template-rows:1fr}
+  .faq-a{display:grid; grid-template-rows:0fr; visibility:hidden; pointer-events:none; transition:grid-template-rows .5s cubic-bezier(.22,1,.36,1), visibility 0s .5s}
+  .faq-item.open .faq-a{grid-template-rows:1fr; visibility:visible; pointer-events:auto; transition-delay:0s}
   .faq-a-in{overflow:hidden}
   .faq-a p{margin:0; padding:0 46px 26px 4px; font-size:14.5px; line-height:1.85; color:var(--ink-2)}
   .faq-a b{color:var(--ink); font-weight:600}
+  .faq-a .inline{color:var(--brand);font-weight:600;text-decoration:underline;text-underline-offset:3px}
   @media (max-width:640px){
     .faq-list{margin-top:30px}
     .faq-q{font-size:15px; padding:19px 2px; gap:12px}
@@ -511,8 +563,9 @@
 </style>
 </head>
 <body>
+<a class="skip" href="#main-content">跳到主要内容</a>
 
-<nav id="nav">
+<nav id="nav" aria-label="主导航">
   <a class="nav-l" href="#top"><img src="assets/icon.png" alt="朝夕">朝夕</a>
   <div class="nav-links">
     <a href="#features">功能</a>
@@ -525,13 +578,14 @@
   <a class="nav-cta js-dl" href="/download/zhaoxi-latest-portable.exe"><span class="cta-full">下载 Windows 版</span><span class="cta-short">下载</span></a>
 </nav>
 
+<main id="main-content">
 <header class="hero" id="top">
   <div class="aurora" aria-hidden="true"><i></i><i></i></div>
   <img class="hero-icon float reveal d1" src="assets/icon.png" alt="朝夕 图标">
-  <div class="eyebrow reveal d2">本地优先 · 数据不出电脑</div>
+  <div class="eyebrow reveal d2">本地优先 · 云同步由你掌控</div>
   <h1><span class="ch reveal d3">朝</span><span class="ch reveal d4">夕</span></h1>
   <div class="tagline reveal d5">朝有所为，夕有所成。</div>
-  <p class="sub reveal d6">一款安静、体面的 Windows 效率工作台。<br>待办、便签与专注，收进一处；所有数据，只留在你自己的电脑。</p>
+  <p class="sub reveal d6">一款安静、体面的 Windows 效率工作台。<br>完整数据始终保存在本机；需要时，再让待办与便签在多台电脑间同步。</p>
   <div class="cta-row reveal d7">
     <a class="btn btn-primary js-dl" href="/download/zhaoxi-latest-portable.exe">下载 Windows 版</a>
     <a class="btn btn-ghost" href="#features">进一步了解
@@ -567,12 +621,13 @@
     <div class="split rev">
       <div class="shot reveal"><div class="frame"><div class="mini" data-mini="todos" data-scene="sync" role="img" aria-label="深色模式与云同步动态演示"><div class="m-sk" aria-hidden="true"><span class="m-sk-side"></span><span class="m-sk-main"><span class="m-sk-h"></span><span class="m-sk-r"></span><span class="m-sk-r s"></span><span class="m-sk-r"></span><span class="m-sk-r s"></span></span></div></div></div></div>
       <div class="txt">
-        <div class="kicker reveal d1">云同步 · 可选</div>
+        <div class="kicker reveal d1">云同步 · 可关闭</div>
         <h2 class="reveal d2">一处记录，<br>处处同步。</h2>
-        <p class="lead reveal d3">数据以本机为准，云端只做安静的中转。换一台电脑，登录同一个账号，一切如约而至。</p>
+        <p class="lead reveal d3">完整数据先落本机；开启同步后，待办与便签经 HTTPS 保存到所选服务器。换一台电脑，登录同一个账号，一切如约而至。</p>
         <ul class="mini-points reveal d4">
-          <li><span class="dot"></span><span><b>本地优先</b>：断网也可完整使用，服务器下线不影响你</span></li>
-          <li><span class="dot"></span><span><b>增量同步</b>：几 KB 的流量，毫秒级往返</span></li>
+          <li><span class="dot"></span><span><b>本地优先</b>：首次登录后，断网或服务器暂时不可用也不影响核心功能</span></li>
+          <li><span class="dot"></span><span><b>边界清楚</b>：只同步待办与便签，专注统计、设置与剪贴板不上云</span></li>
+          <li><span class="dot"></span><span><b>增量同步</b>：只传有变化的记录，减少不必要的流量</span></li>
           <li><span class="dot"></span><span><b>账号隔离</b>：切换账号，本机数据自动归档，绝不串号</span></li>
         </ul>
       </div>
@@ -646,7 +701,7 @@
       </div>
       <div class="faq-item reveal d2">
         <button class="faq-q" type="button" aria-expanded="false"><span>我的数据存在哪里？</span><span class="faq-ico"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 1.6v8.8M1.6 6h8.8"/></svg></span></button>
-        <div class="faq-a"><div class="faq-a-in"><p>默认只保存在<b>你自己的电脑</b>上（本地数据目录，原子写入 + 损坏自愈）。云同步是可选功能：不开启时，断网、服务器下线都不影响使用。</p></div></div>
+        <div class="faq-a"><div class="faq-a-in"><p>完整数据始终保存在<b>你自己的电脑</b>上。开启同步时，待办、便签与删除标记会经 HTTPS 保存到所选服务器；专注统计、设置和剪贴板不上云。<a class="inline" href="privacy.html">查看完整说明</a></p></div></div>
       </div>
       <div class="faq-item reveal d3">
         <button class="faq-q" type="button" aria-expanded="false"><span>换电脑后数据怎么办？</span><span class="faq-ico"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 1.6v8.8M1.6 6h8.8"/></svg></span></button>
@@ -687,15 +742,16 @@
     </div>
   </div>
 </section>
+</main>
 
 <!-- 下载选择弹层 -->
 <div class="dl-modal" id="dl-modal" hidden>
-  <div class="dl-sheet" role="dialog" aria-modal="true" aria-label="下载朝夕">
+  <div class="dl-sheet" role="dialog" aria-modal="true" aria-labelledby="dl-title" aria-describedby="dl-sub">
     <button class="dl-close" id="dl-close" type="button" aria-label="关闭">
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2.7 2.7l6.6 6.6M9.3 2.7L2.7 9.3"/></svg>
     </button>
-    <h3>下载朝夕 · Windows</h3>
-    <p class="dl-sub">选择适合你的版本 · 从官方服务器直连下载</p>
+    <h3 id="dl-title">下载朝夕 · Windows</h3>
+    <p class="dl-sub" id="dl-sub">选择适合你的版本 · 从官方服务器直连下载</p>
     <a class="dl-option" href="/download/zhaoxi-latest-portable.exe">
       <span class="dl-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v10M12 14l-4-4M12 14l4-4M5 19h14"/></svg></span>
       <span class="dl-info"><b>便携版</b><em>单文件免安装，双击即用 · 约 4.8 MB</em></span>
@@ -706,7 +762,7 @@
       <span class="dl-info"><b>安装版</b><em>开始菜单快捷方式，支持卸载 · 约 1.7 MB</em></span>
       <span class="dl-arrow">⇣</span>
     </a>
-    <p class="dl-foot">未做数字签名，首次运行如遇 SmartScreen 提示请选择「仍要运行」<br><a href="https://github.com/btrencai/zhaoxi/releases">GitHub 备用通道（海外）</a> · <a href="changelog.html">查看更新日志</a></p>
+    <p class="dl-foot">未做数字签名，首次运行如遇 SmartScreen 提示请选择「仍要运行」<br><a href="https://github.com/btrencai/zhaoxi/releases">GitHub 备用通道（海外）</a> · <a href="changelog.html">查看更新日志</a> · <a href="privacy.html">隐私与数据</a></p>
   </div>
 </div>
 
@@ -719,6 +775,7 @@
     <div class="foot-l">
       <a href="https://github.com/btrencai/zhaoxi">GitHub</a>
       <a href="#faq">常见问题</a>
+      <a href="privacy.html">隐私与数据</a>
       <a href="changelog.html">更新日志</a>
       <a href="https://github.com/btrencai/zhaoxi#服务端云同步">服务端部署</a>
     </div>
@@ -788,12 +845,35 @@
 
   // ── 下载选择弹层 ──
   const dlModal = document.getElementById('dl-modal');
-  const openDl = (e) => { e.preventDefault(); dlModal.hidden = false; requestAnimationFrame(() => dlModal.classList.add('show')); };
-  const closeDl = () => { dlModal.classList.remove('show'); setTimeout(() => { dlModal.hidden = true; }, 240); };
+  const dlClose = document.getElementById('dl-close');
+  let dlTrigger = null;
+  let dlHideTimer = 0;
+  const openDl = (e) => {
+    e.preventDefault(); clearTimeout(dlHideTimer); dlTrigger = e.currentTarget;
+    dlModal.hidden = false; document.body.style.overflow = 'hidden';
+    requestAnimationFrame(() => { dlModal.classList.add('show'); dlClose.focus(); });
+  };
+  const closeDl = () => {
+    if (dlModal.hidden) return;
+    dlModal.classList.remove('show');
+    dlHideTimer = setTimeout(() => {
+      dlModal.hidden = true; document.body.style.overflow = '';
+      if (dlTrigger && document.contains(dlTrigger)) dlTrigger.focus();
+    }, 240);
+  };
   document.querySelectorAll('.js-dl').forEach((el) => el.addEventListener('click', openDl));
-  document.getElementById('dl-close').addEventListener('click', closeDl);
+  dlClose.addEventListener('click', closeDl);
   dlModal.addEventListener('click', (e) => { if (e.target === dlModal) closeDl(); });
-  window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !dlModal.hidden) closeDl(); });
+  window.addEventListener('keydown', (e) => {
+    if (dlModal.hidden) return;
+    if (e.key === 'Escape') { e.preventDefault(); closeDl(); return; }
+    if (e.key !== 'Tab') return;
+    const focusable = [...dlModal.querySelectorAll('a[href],button:not([disabled])')].filter(el => el.offsetParent !== null);
+    if (!focusable.length) return;
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
 
   // ═══════════════ 活的界面演示（Live mini apps）═══════════════
   (() => {
@@ -1116,11 +1196,17 @@
 
 
   // ── 常见问题（手风琴）──
-  document.querySelectorAll('.faq-item').forEach((item) => {
+  document.querySelectorAll('.faq-item').forEach((item, index) => {
     const btn = item.querySelector('.faq-q');
+    const answer = item.querySelector('.faq-a');
+    const n = index + 1;
+    btn.id = 'faq-q-' + n; btn.setAttribute('aria-controls', 'faq-a-' + n);
+    answer.id = 'faq-a-' + n; answer.setAttribute('role', 'region'); answer.setAttribute('aria-labelledby', btn.id);
+    answer.setAttribute('aria-hidden', String(!item.classList.contains('open')));
     btn.addEventListener('click', () => {
       const open = item.classList.toggle('open');
       btn.setAttribute('aria-expanded', String(open));
+      answer.setAttribute('aria-hidden', String(!open));
     });
   });
 

@@ -8,6 +8,15 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "1.2.3",
+    date: "2026-09-13",
+    highlights: [
+      "专注页全新双视图：默认只展示设置选项（无计时钟面），点击「开始专注」后倒计时界面浮现、设置隐退，重置回到设置",
+      "新增 专注时长自定义：5–180 分钟任意调节（步进 5），与 25 / 15 / 45 快捷胶囊互通",
+      "视图切换编排动画：淡出 → 柔焦浮现；移除页头「专注设置」开关，设置默认直接可见",
+    ],
+  },
+  {
     version: "1.2.2",
     date: "2026-09-13",
     highlights: [

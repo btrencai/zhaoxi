@@ -1,7 +1,7 @@
 {
   "name": "simple-todo",
   "private": true,
-  "version": "1.2.2",
+  "version": "1.2.3",
   "type": "module",
   "description": "朝夕 —— 基于 Tauri 2 与 Rust 的本地优先效率工作台",
   "scripts": {

@@ -371,7 +371,7 @@
   .m-sweep.go{animation:sweepDown 1.4s ease}
   @keyframes sweepDown{0%{opacity:0; transform:translateY(-70%)}30%{opacity:1}100%{opacity:0; transform:translateY(70%)}}
   /* 专注视图 */
-  .m-focus{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1.55em; min-height:0; transition:opacity .5s ease}
+  .m-focus{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1.15em; min-height:0; transition:opacity .5s ease}
   .m-ring{position:relative; width:21.5em; height:21.5em; flex:none}
   .m-ring > svg{width:100%; height:100%; display:block}
   .m-ring .track{fill:none; stroke:var(--m-ring-track); stroke-width:7}
@@ -380,16 +380,16 @@
   .m-ring.flash::after{animation:ringPulse .9s ease-out}
   @keyframes ringPulse{0%{opacity:.65; transform:scale(1)}100%{opacity:0; transform:scale(1.07)}}
   .m-center{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.5em}
-  .m-time{font-size:4.15em; font-weight:800; letter-spacing:.005em; font-variant-numeric:tabular-nums; line-height:1}
-  .m-phase{font-size:1em; font-weight:600; color:var(--m-t2); letter-spacing:.08em; transition:color .4s}
-  .m-ctx{font-size:.74em; color:var(--m-t3); font-weight:500}
-  .m-dots{display:flex; gap:.55em}
-  .m-dots i{width:.64em; height:.64em; border-radius:50%; background:var(--m-dot-empty); transition:background .35s ease, transform .35s cubic-bezier(.34,1.5,.64,1)}
+  .m-time{font-size:4.7em; font-weight:800; letter-spacing:.005em; font-variant-numeric:tabular-nums; line-height:1}
+  .m-phase{font-size:.96em; font-weight:600; color:var(--m-t2); letter-spacing:.1em; transition:color .4s}
+  .m-ctx{font-size:.72em; color:var(--m-t2); font-weight:500; opacity:.75}
+  .m-dots{display:flex; gap:.5em}
+  .m-dots i{width:.58em; height:.58em; border-radius:50%; background:var(--m-dot-empty); transition:background .35s ease, transform .35s cubic-bezier(.34,1.5,.64,1)}
   .m-dots i.on{background:var(--m-accent); transform:scale(1.18)}
-  .m-rbtns{display:flex; gap:.9em}
-  .m-pill{font-size:.9em; font-weight:700; padding:.68em 1.7em; border-radius:.62em}
+  .m-rbtns{display:flex; gap:.75em; align-items:center}
+  .m-pill{font-size:.88em; font-weight:700; padding:.6em 1.5em; border-radius:.6em}
   .m-pill.fill{color:#fff; background:var(--m-accent)}
-  .m-pill.ghost{color:var(--m-t2); border:1px solid var(--m-line); font-weight:600}
+  .m-pill.ghost{color:var(--m-t2); border:1px solid var(--m-line); font-weight:600; font-size:.8em; padding:.55em 1.1em}
   .m-presets{display:flex; gap:.6em}
   .m-pre{font-size:.78em; font-weight:600; color:var(--m-t2); border:1px solid var(--m-line); padding:.45em 1em; border-radius:99em}
   .m-pre.on{color:var(--m-accent); border-color:var(--m-accent); background:var(--m-accent-soft)}
@@ -461,15 +461,16 @@
     .m-row{padding:.58em .9em; gap:.6em}
     .m-chip{font-size:.74em}
     .m-tm{display:none}
-    .m-focus{gap:.95em}
-    .m-ring{width:13.5em; height:13.5em}
-    .m-time{font-size:2.95em}
+    .m-focus{gap:.7em}
+    .m-ring{width:11.6em; height:11.6em}
+    .m-time{font-size:2.35em}
     .m-phase{font-size:.8em}
     .m-ctx{font-size:.64em}
-    .m-dots i{width:.55em; height:.55em}
-    .m-pill{font-size:.75em; padding:.52em 1.2em}
+    .m-dots i{width:.48em; height:.48em}
+    .m-pill{font-size:.78em; padding:.55em 1.3em}
     .m-presets{display:none}
     .m-today{display:none}
+    .m-ctx{display:none}
   }
 
 </style>
@@ -901,9 +902,7 @@
         '</svg>' +
         '<div class="m-center"><span class="m-time">25:00</span><span class="m-phase">专注时间</span><span class="m-ctx">第 1 个番茄 · 每 4 个番茄后长休息</span></div></div>' +
         '<div class="m-dots"><i></i><i></i><i></i><i></i></div>' +
-        '<div class="m-rbtns"><span class="m-pill fill">暂停</span><span class="m-pill ghost">重置</span></div>' +
-        '<div class="m-presets"><span class="m-pre on">25 分钟</span><span class="m-pre">15 分钟</span><span class="m-pre">45 分钟</span></div>' +
-        '<div class="m-today">今日已完成 <b>0</b> 个番茄</div>';
+        '<div class="m-rbtns"><span class="m-pill fill">暂停</span></div>';
       main.appendChild(wrap);
       const ring = qs(wrap, '.m-ring');
       const fillC = qs(wrap, '.fill');
@@ -912,7 +911,7 @@
       const phaseEl = qs(wrap, '.m-phase');
       const ctxEl = qs(wrap, '.m-ctx');
       const dotsEls = [...wrap.querySelectorAll('.m-dots i')];
-      const todayEl = qs(wrap, '.m-today');
+      /* 无第二控件：演示仅保留唯一按钮 */
       fillC.style.strokeDasharray = String(CIRC);
 
       const setRing = (remainFrac) => {
@@ -950,16 +949,16 @@
         // ── 专注
         phaseEl.textContent = '专注时间';
         ctxEl.textContent = '第 ' + (roundDone + 1) + ' 个番茄 · 每 4 个番茄后长休息';
-        timeEl.textContent = '25:00';
-        resetRingFull();
+        timeEl.textContent = '21:00';
+        setRing(0.84);
         await sleep(620);
-        await run(8600, 1500);
+        await run(8600, 1260);
         ring.classList.add('flash');
         await sleep(760);
         ring.classList.remove('flash');
         roundDone += 1;
         if (roundDone <= 4) dotsEls[roundDone - 1].classList.add('on');
-        todayEl.innerHTML = '今日已完成 <b>' + roundDone + '</b> 个番茄';
+        /* 无第二控件：演示仅保留唯一按钮 */
         // ── 短休
         phaseEl.textContent = '短休息';
         ctxEl.textContent = '起来活动一下';
@@ -970,10 +969,10 @@
         // ── 回到专注（第二轮，加速演示）
         phaseEl.textContent = '专注时间';
         ctxEl.textContent = '第 ' + (roundDone + 1) + ' 个番茄 · 每 4 个番茄后长休息';
-        timeEl.textContent = '25:00';
-        resetRingFull();
+        timeEl.textContent = '22:00';
+        setRing(0.88);
         await sleep(450);
-        await run(4200, 1500);
+        await run(4200, 1320);
         ring.classList.add('flash');
         await sleep(700);
         ring.classList.remove('flash');
@@ -982,7 +981,7 @@
         await sleep(560);
         roundDone = 0;
         dotsEls.forEach((d) => d.classList.remove('on'));
-        todayEl.innerHTML = '今日已完成 <b>0</b> 个番茄';
+        /* 无第二控件：演示仅保留唯一按钮 */
         phaseEl.textContent = '专注时间';
         ctxEl.textContent = '第 1 个番茄 · 每 4 个番茄后长休息';
         timeEl.textContent = '25:00';

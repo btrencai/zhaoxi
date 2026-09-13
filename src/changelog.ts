@@ -8,6 +8,15 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "1.2.2",
+    date: "2026-09-13",
+    highlights: [
+      "新增 应用内一键升级：启动自动检测新版本（每 6 小时复查），设置导航出现角标提示，点开即可升级",
+      "升级全程在应用内完成：下载进度条实时显示 → SHA256 完整性校验 → 自动退出、替换为新版本并重新打开",
+      "「前往下载」不再跳转浏览器下载便携版；升级失败可重试，目录不可写等特殊情况保留手动下载兜底",
+    ],
+  },
+  {
     version: "1.2.1",
     date: "2026-09-13",
     highlights: [

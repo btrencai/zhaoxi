@@ -2067,6 +2067,45 @@ input {
   border-color: color-mix(in srgb, var(--accent) 42%, transparent);
   color: color-mix(in srgb, var(--accent) 88%, var(--text-1));
 }
+.fs-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.fs-step {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--stroke);
+  background: transparent;
+  color: var(--text-2);
+  font-size: 15px;
+  font-family: inherit;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s var(--ease), color 0.15s var(--ease), border-color 0.15s var(--ease),
+    transform 0.3s var(--spring);
+}
+.fs-step:hover {
+  color: var(--text-1);
+  border-color: var(--stroke-2);
+}
+.fs-step:active {
+  transform: scale(0.92);
+  transition-duration: 0.08s;
+}
+.fs-step-val {
+  min-width: 64px;
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-1);
+  font-variant-numeric: tabular-nums;
+}
 .focus-cycles-row {
   font-size: 12px;
   color: var(--text-3);
@@ -2128,6 +2167,29 @@ input {
   border-radius: 14px;
   border: 1px solid var(--stroke);
   background: color-mix(in srgb, var(--text-1) 3%, transparent);
+}
+.focus-run {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+}
+.focus-setup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+.focus-card[data-mode="setup"] .focus-run {
+  display: none;
+}
+.focus-card[data-mode="run"] .focus-setup {
+  display: none;
+}
+.focus-begin {
+  min-width: 148px;
 }
 .fs-row {
   display: flex;

@@ -160,8 +160,11 @@ const els = {
   focusContext: $id("focus-context"),
   focusTaskSelect: $id<HTMLSelectElement>("focus-task-select"),
   focusToday: $id("focus-today"),
-  focusSettingsToggle: $id<HTMLButtonElement>("focus-settings-toggle"),
+  focusBegin: $id<HTMLButtonElement>("focus-begin"),
   focusSettings: $id("focus-settings"),
+  fsWorkMinus: $id<HTMLButtonElement>("fs-work-minus"),
+  fsWorkVal: $id("fs-work-val"),
+  fsWorkPlus: $id<HTMLButtonElement>("fs-work-plus"),
   fsAutoBreak: $id("fs-auto-break"),
   fsAutoNext: $id("fs-auto-next"),
   fsSound: $id("fs-sound"),
@@ -228,6 +231,7 @@ let focusPhase: FocusPhase = "focus";
 let timerRunning = false;
 let timerEndsAt = 0;
 let timerRemainingSec = 25 * 60;
+let focusSessionActive = false;
 let timerInterval: number | null = null;
 let roundDone = 0;
 let focusTaskId: string | null = null;
@@ -1733,6 +1737,46 @@ function populateFocusSelect() {
   sel.value = focusTaskId ?? "";
 }
 
+let focusViewMode: "setup" | "run" | null = null;
+
+function setFocusViewMode(next: "setup" | "run") {
+  const runEl = document.getElementById("focus-run");
+  const setupEl = document.getElementById("focus-setup");
+  if (next === focusViewMode || !focusCardEl || !runEl || !setupEl) return;
+  const first = focusViewMode === null;
+  const leaving = focusViewMode === "run" ? runEl : setupEl;
+  const entering = next === "run" ? runEl : setupEl;
+  focusViewMode = next;
+  if (first) {
+    focusCardEl.dataset.mode = next;
+    return;
+  }
+  // 出场淡出 → 切换到目标视图 → 入场浮现（柔焦 + 位移）
+  const out = leaving.animate(
+    [
+      { opacity: 1, transform: "translateY(0)" },
+      { opacity: 0, transform: next === "run" ? "translateY(-8px)" : "translateY(8px)" },
+    ],
+    { duration: 200, easing: "ease", fill: "forwards" }
+  );
+  out.finished
+    .then(() => {
+      out.cancel();
+      if (!focusCardEl) return;
+      focusCardEl.dataset.mode = next;
+      entering.animate(
+        [
+          { opacity: 0, transform: next === "run" ? "translateY(10px)" : "translateY(-10px)", filter: "blur(4px)" },
+          { opacity: 1, transform: "translateY(0)", filter: "blur(0)" },
+        ],
+        { duration: 380, easing: "cubic-bezier(0.32, 0.72, 0, 1)", fill: "backwards" }
+      );
+    })
+    .catch(() => {
+      if (focusCardEl) focusCardEl.dataset.mode = next;
+    });
+}
+
 function renderFocus() {
   els.focusTime.textContent = fmtClock(timerRemainingSec);
   const total = phaseTotalSec();
@@ -1772,6 +1816,8 @@ function renderFocus() {
   els.focusPresets.querySelectorAll<HTMLButtonElement>(".preset-chip").forEach((chip) => {
     chip.classList.toggle("active", Number(chip.dataset.min) === settings.focusWork);
   });
+  els.fsWorkVal.textContent = `${settings.focusWork || 25} 分钟`;
+  setFocusViewMode(focusSessionActive ? "run" : "setup");
   document.querySelectorAll<HTMLButtonElement>("#fs-short-chips .preset-chip").forEach((c) =>
     c.classList.toggle("active", Number(c.dataset.short) === settings.focusShort)
   );
@@ -1862,6 +1908,7 @@ function resetTimer() {
     timerInterval = null;
   }
   focusPhase = "focus";
+  focusSessionActive = false;
   timerRemainingSec = phaseMinutes("focus") * 60;
   renderFocus();
   persistFocusState();
@@ -1943,6 +1990,7 @@ async function restoreFocusState() {
     if (running && endsAt > Date.now() + 500) {
       timerRunning = true;
       timerEndsAt = endsAt;
+      focusSessionActive = true;
       timerRemainingSec = Math.max(0, Math.round((endsAt - Date.now()) / 1000));
       timerInterval = window.setInterval(tickTimer, 250);
       renderFocus();
@@ -1959,13 +2007,15 @@ async function restoreFocusState() {
       } else {
         focusPhase = "focus";
       }
+      focusSessionActive = true;
       timerRemainingSec = phaseTotalSec();
       renderFocus();
       toast("上一阶段在应用关闭期间已完成");
       persistFocusState();
       return;
     }
-    if (remaining > 0 && remaining < phaseTotalSec()) {
+    if (remaining > 0 && (remaining < phaseTotalSec() || focusPhase !== "focus")) {
+      focusSessionActive = true;
       timerRemainingSec = Math.round(remaining);
       renderFocus();
     }
@@ -2804,11 +2854,19 @@ function bindEvents() {
   els.focusPresets.querySelectorAll<HTMLButtonElement>(".preset-chip").forEach((chip) => {
     chip.addEventListener("click", () => setFocusPreset(Number(chip.dataset.min ?? "25")));
   });
+  // 专注时长步进器：5–180 分钟，步进 5
+  const stepWorkMinutes = (delta: number) => {
+    const next = Math.min(180, Math.max(5, (settings.focusWork || 25) + delta));
+    if (next === settings.focusWork) return;
+    setFocusPreset(next);
+  };
+  els.fsWorkMinus.addEventListener("click", () => stepWorkMinutes(-5));
+  els.fsWorkPlus.addEventListener("click", () => stepWorkMinutes(5));
   els.focusSkip.addEventListener("click", skipPhase);
-  els.focusSettingsToggle.addEventListener("click", () => {
-    const show = els.focusSettings.hidden;
-    els.focusSettings.hidden = !show;
-    els.focusSettingsToggle.setAttribute("aria-expanded", String(show));
+  els.focusBegin.addEventListener("click", () => {
+    // 从设置视图进入计时：倒计时界面浮现、设置隐退（renderFocus 内切换视图）
+    focusSessionActive = true;
+    startTimer();
   });
   els.focusTaskSelect.addEventListener("change", () => {
     focusTaskId = els.focusTaskSelect.value || null;

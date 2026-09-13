@@ -180,6 +180,7 @@ const els = {
 };
 
 const focusRing = document.getElementById("focus-ring-fill") as unknown as SVGCircleElement;
+const focusCardEl = document.querySelector(".focus-card") as HTMLElement | null;
 
 const emptyP = els.empty.querySelector("p") as HTMLParagraphElement;
 const emptySpan = els.empty.querySelector("span") as HTMLSpanElement;
@@ -1739,6 +1740,8 @@ function renderFocus() {
   focusRing.style.strokeDasharray = String(RING_CIRCUMFERENCE);
   focusRing.style.strokeDashoffset = String(RING_CIRCUMFERENCE * (1 - fraction));
   els.focusPhase.textContent = PHASE_LABEL[focusPhase];
+  els.focusPhase.dataset.phase = focusPhase;
+  if (focusCardEl) focusCardEl.dataset.phase = focusPhase;
   els.focusPresets.classList.toggle("dimmed", focusPhase !== "focus");
   const rounds = Math.max(2, settings.focusRounds || 4);
   if (focusPhase === "focus") {

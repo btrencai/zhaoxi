@@ -1915,6 +1915,35 @@ input {
   padding: 30px 44px 26px;
   border-radius: 20px;
 }
+/* 休息阶段：状态色贯穿整卡（圆环渐变 / 光晕 / 主按钮 / 进度点均随 --accent 变化） */
+.focus-card[data-phase="short"] {
+  --accent: #d97706;
+  --accent-2: #f59e0b;
+  --glow: rgba(217, 119, 6, 0.32);
+  --accent-soft: rgba(217, 119, 6, 0.12);
+  --accent-line: rgba(217, 119, 6, 0.38);
+}
+.focus-card[data-phase="long"] {
+  --accent: #0d9488;
+  --accent-2: #14b8a6;
+  --glow: rgba(13, 148, 136, 0.3);
+  --accent-soft: rgba(13, 148, 136, 0.11);
+  --accent-line: rgba(13, 148, 136, 0.36);
+}
+:root[data-theme="dark"] .focus-card[data-phase="short"] {
+  --accent: #f59e0b;
+  --accent-2: #fbbf24;
+  --glow: rgba(245, 158, 11, 0.3);
+  --accent-soft: rgba(245, 158, 11, 0.16);
+  --accent-line: rgba(245, 158, 11, 0.4);
+}
+:root[data-theme="dark"] .focus-card[data-phase="long"] {
+  --accent: #14b8a6;
+  --accent-2: #2dd4bf;
+  --glow: rgba(20, 184, 166, 0.28);
+  --accent-soft: rgba(20, 184, 166, 0.15);
+  --accent-line: rgba(45, 212, 191, 0.38);
+}
 .focus-ring-wrap {
   position: relative;
   width: 240px;
@@ -1934,7 +1963,8 @@ input {
   fill: none;
   stroke-width: 10;
   stroke-linecap: round;
-  transition: stroke-dashoffset 0.25s linear;
+  filter: drop-shadow(0 0 13px color-mix(in srgb, var(--accent) 30%, transparent));
+  transition: stroke-dashoffset 0.25s linear, filter 0.6s ease;
 }
 .focus-center {
   position: absolute;
@@ -1943,19 +1973,40 @@ input {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 12px;
 }
 .focus-time {
-  font-size: 44px;
+  font-size: 46px;
   font-weight: 700;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
   color: var(--text-1);
 }
 .focus-phase {
-  font-size: 12px;
-  color: var(--text-2);
-  letter-spacing: 0.08em;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: color-mix(in srgb, var(--accent) 82%, var(--text-1));
+  transition: background 0.3s var(--ease), color 0.3s var(--ease);
+}
+.focus-phase[data-phase="short"] {
+  background: rgba(245, 158, 11, 0.16);
+  color: #8a4a06;
+}
+.focus-phase[data-phase="long"] {
+  background: rgba(13, 148, 136, 0.14);
+  color: #0c6e4f;
+}
+:root[data-theme="dark"] .focus-phase[data-phase="short"] {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fcd34d;
+}
+:root[data-theme="dark"] .focus-phase[data-phase="long"] {
+  background: rgba(45, 212, 191, 0.18);
+  color: #6ee7b7;
 }
 .focus-controls {
   display: flex;
@@ -1981,25 +2032,29 @@ input {
   border-color: var(--stroke-2);
 }
 .preset-chip.active {
-  background: var(--accent-soft);
-  border-color: var(--accent-line);
-  color: color-mix(in srgb, var(--accent) 80%, var(--text-1));
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 42%, transparent);
+  color: color-mix(in srgb, var(--accent) 88%, var(--text-1));
 }
 .focus-cycles-row {
   font-size: 12px;
   color: var(--text-3);
 }
 .focus-context {
-  font-size: 11.5px;
+  margin-top: -6px;
+  max-width: 460px;
+  text-align: center;
+  line-height: 1.5;
+  font-size: 12px;
   color: var(--text-2);
 }
 .focus-dots {
   display: flex;
-  gap: 7px;
+  gap: 8px;
 }
 .focus-dots i {
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: color-mix(in srgb, var(--text-1) 20%, transparent);
   transition: background 0.25s var(--ease), transform 0.25s var(--ease);

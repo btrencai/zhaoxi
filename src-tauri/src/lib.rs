@@ -689,6 +689,39 @@ fn setup_tray(app: &tauri::App) -> Result<(), String> {
     Ok(())
 }
 
+/// 让系统通知横幅显示「朝夕」而不是 "Windows PowerShell"：
+/// Toast 的归属依赖已注册的 AppUserModelID；未注册的未打包应用会回退到
+/// PowerShell 的处理器。这里在 HKCU 幂等写入 DisplayName + IconUri（reg.exe，无窗口）。
+#[cfg(windows)]
+fn register_toast_identity(app: &AppHandle) {
+    use std::os::windows::process::CommandExt;
+    const CREATE_NO_WINDOW: u32 = 0x08000000;
+    let aumid = app.config().identifier.clone();
+    let display = app
+        .config()
+        .product_name
+        .clone()
+        .unwrap_or_else(|| "朝夕".to_string());
+    let exe = std::env::current_exe()
+        .ok()
+        .map(|p| p.display().to_string())
+        .unwrap_or_default();
+    let key = format!("HKCU\\Software\\Classes\\AppUserModelId\\{aumid}");
+    let _ = std::process::Command::new("reg")
+        .args(["add", &key, "/v", "DisplayName", "/t", "REG_SZ", "/d", &display, "/f"])
+        .creation_flags(CREATE_NO_WINDOW)
+        .status();
+    if !exe.is_empty() {
+        let _ = std::process::Command::new("reg")
+            .args(["add", &key, "/v", "IconUri", "/t", "REG_SZ", "/d", &exe, "/f"])
+            .creation_flags(CREATE_NO_WINDOW)
+            .status();
+    }
+}
+
+#[cfg(not(windows))]
+fn register_toast_identity(_app: &AppHandle) {}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -705,6 +738,9 @@ pub fn run() {
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .setup(|app| {
             let handle = app.handle().clone();
+            // 注册 Toast 应用身份（后台线程，不阻塞启动）：让系统通知横幅显示「朝夕」
+            let toast_handle = handle.clone();
+            std::thread::spawn(move || register_toast_identity(&toast_handle));
             setup_tray(app).map_err(|err| format!("创建系统托盘失败：{err}"))?;
 
             // 按设置应用托盘可见性与启动行为

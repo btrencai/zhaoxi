@@ -1,6 +1,6 @@
 [package]
 name = "simple-todo"
-version = "1.2.0"
+version = "1.2.1"
 description = "朝夕 —— 基于 Tauri 2 的本地优先效率工作台"
 authors = ["张展铭"]
 edition = "2021"

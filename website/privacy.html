@@ -95,8 +95,8 @@
   <img class="head-icon reveal d1" src="assets/icon.png" alt="朝夕图标">
   <div class="kicker reveal d2">Privacy &amp; Data</div>
   <h1 class="reveal d3">你的数据，<br>应该说得明白。</h1>
-  <p class="head-sub reveal d4">这不是一句“我们重视隐私”的口号，而是一份按朝夕 v1.2.0 当前实现逐项写清的说明。</p>
-  <span class="updated reveal d4"><i></i>更新于 2026 年 9 月 13 日 · 对应 v1.2.0</span>
+  <p class="head-sub reveal d4">这不是一句“我们重视隐私”的口号，而是一份按朝夕 v1.2.1 当前实现逐项写清的说明。</p>
+  <span class="updated reveal d4"><i></i>更新于 2026 年 9 月 13 日 · 对应 v1.2.1</span>
 </header>
 <main id="main-content">
   <section class="summary" aria-labelledby="summary-title">
@@ -130,15 +130,15 @@
       <div class="content">
         <article class="policy reveal" id="collect"><span class="num">01</span><h2>收集哪些数据</h2><p>朝夕只处理实现账号、同步和网站安全所必需的数据，不建立广告画像。</p><div class="facts"><div class="fact"><b>注册与登录</b><p>邮箱、随机用户标识、会话令牌。密码会通过 HTTPS 传输，服务器只保存随机盐和经过 200,000 轮 PBKDF2-HMAC-SHA256 计算的摘要，不保存明文密码。注册验证码摘要最多有效 10 分钟。</p></div><div class="fact"><b>云同步内容</b><p>开启同步后上传待办、便签、删除标记和更新时间，用于多设备合并。冲突按最后更新时间处理。</p></div><div class="fact"><b>官网访问</b><p>本站不设置追踪 Cookie，不接入第三方分析或广告脚本。托管服务器可能产生包含 IP、访问时间、请求地址和浏览器标识的标准访问日志，用于安全防护与故障排查。</p></div></div></article>
 
-        <article class="policy reveal" id="local"><span class="num">02</span><h2>本地与云端</h2><p>本地数据位于 Windows 应用数据目录 <code>%APPDATA%\com.simple.todo\</code>。待办、便签、专注、设置和账号会话分别保存，写入采用临时文件替换方式降低损坏风险。</p><p>如果开启自动同步或手动同步，待办与便签会保存一份副本到当前选择的服务器：可以是朝夕官方服务器，也可以是你自行部署的兼容服务器。</p><div class="note"><strong>不参与云同步：</strong>专注统计、番茄钟运行状态、应用设置和剪贴板历史。关闭自动同步后，新的待办与便签变化不会自动发送到服务器。</div></article>
+        <article class="policy reveal" id="local"><span class="num">02</span><h2>本地与云端</h2><p>本地数据位于 Windows 应用数据目录 <code>%APPDATA%\com.simple.todo\</code>。待办、便签、专注、设置和账号会话分别保存，写入采用临时文件替换方式降低损坏风险。</p><p>如果开启自动同步或手动同步，待办与便签会保存一份副本到当前选择的服务器：可以是朝夕官方服务器，也可以是你自行部署的兼容服务器。</p><p>另外，为了让 Windows 通知横幅正确显示「朝夕」，应用会在当前用户注册表（HKCU）注册自己的通知身份（显示名与图标路径）；该注册不包含任何个人数据。</p><div class="note"><strong>不参与云同步：</strong>专注统计、番茄钟运行状态、应用设置和剪贴板历史。关闭自动同步后，新的待办与便签变化不会自动发送到服务器。</div></article>
 
         <article class="policy reveal" id="security"><span class="num">03</span><h2>安全与边界</h2><ul class="check-list"><li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10" cy="10" r="8"/><path d="M6.7 10.2l2.1 2.2 4.6-5"/></svg><span>官方服务通过 HTTPS 传输；邮箱验证码、随机令牌和登录限流用于降低冒用风险。</span></li><li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10" cy="10" r="8"/><path d="M6.7 10.2l2.1 2.2 4.6-5"/></svg><span>每个同步请求都使用账号令牌验证，并按用户标识隔离查询。</span></li><li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10" cy="10" r="8"/><path d="M6.7 10.2l2.1 2.2 4.6-5"/></svg><span>客户端与服务端代码公开在 <a class="inline" href="https://github.com/btrencai/zhaoxi">GitHub</a>，可审查，也可自行部署服务器。</span></li></ul><div class="note warn"><strong>请注意：当前同步不是端到端加密。</strong>服务器运维者在技术上能够读取其数据库中的待办与便签内容。如果你不希望官方服务器保存同步副本，可以关闭同步，或改用自己控制的服务器。</div></article>
 
-        <article class="policy reveal" id="retention"><span class="num">04</span><h2>保留与删除</h2><div class="facts"><div class="fact"><b>本机数据</b><p>退出登录不会删除本机待办与便签。若要彻底清理，请在应用设置中打开数据目录，退出应用后删除该目录；仅卸载应用可能会保留数据文件。</p></div><div class="fact"><b>云端账号与同步副本</b><p>退出登录只撤销当前会话，不会自动删除账号及云端同步副本。当前 v1.2.0 暂无自助注销入口。</p></div><div class="fact"><b>自定义服务器</b><p>保留周期和删除方式由对应服务器的运维者决定；朝夕官方无法代替第三方服务器删除数据。</p></div></div><div class="note">如需删除官方服务器上的账号和同步数据，请通过 <a href="https://github.com/btrencai/zhaoxi/issues">GitHub Issues</a> 联系维护者获取核验方式。公开内容只写“申请删除朝夕账号”，<strong>不要公开邮箱、密码、验证码或令牌。</strong></div></article>
+        <article class="policy reveal" id="retention"><span class="num">04</span><h2>保留与删除</h2><div class="facts"><div class="fact"><b>本机数据</b><p>退出登录不会删除本机待办与便签。若要彻底清理，请在应用设置中打开数据目录，退出应用后删除该目录；仅卸载应用可能会保留数据文件。</p></div><div class="fact"><b>云端账号与同步副本</b><p>退出登录只撤销当前会话，不会自动删除账号及云端同步副本。当前 v1.2.1 暂无自助注销入口。</p></div><div class="fact"><b>自定义服务器</b><p>保留周期和删除方式由对应服务器的运维者决定；朝夕官方无法代替第三方服务器删除数据。</p></div></div><div class="note">如需删除官方服务器上的账号和同步数据，请通过 <a href="https://github.com/btrencai/zhaoxi/issues">GitHub Issues</a> 联系维护者获取核验方式。公开内容只写“申请删除朝夕账号”，<strong>不要公开邮箱、密码、验证码或令牌。</strong></div></article>
 
         <article class="policy reveal" id="choice"><span class="num">05</span><h2>你的选择</h2><ul class="check-list"><li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10" cy="10" r="8"/><path d="M6.7 10.2l2.1 2.2 4.6-5"/></svg><span>在设置中关闭自动同步，继续使用本机完整数据。</span></li><li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10" cy="10" r="8"/><path d="M6.7 10.2l2.1 2.2 4.6-5"/></svg><span>使用高级入口连接自己部署的服务器，让云端副本也由你掌控。</span></li><li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10" cy="10" r="8"/><path d="M6.7 10.2l2.1 2.2 4.6-5"/></svg><span>随时打开本地数据目录，复制或备份 JSON 文件，不依赖专有导出格式。</span></li></ul></article>
 
-        <article class="policy reveal" id="changes"><span class="num">06</span><h2>说明变更</h2><p>当同步范围、账号机制或第三方服务发生实质变化时，本页会更新日期并写明变化。当前说明对应朝夕 v1.2.0，更新于 2026 年 9 月 13 日。</p><p>发现表述与实际代码不一致？请在 <a class="inline" href="https://github.com/btrencai/zhaoxi/issues">GitHub Issues</a> 提出，我们会以可核验的实现为准修正。</p></article>
+        <article class="policy reveal" id="changes"><span class="num">06</span><h2>说明变更</h2><p>当同步范围、账号机制或第三方服务发生实质变化时，本页会更新日期并写明变化。当前说明对应朝夕 v1.2.1，更新于 2026 年 9 月 13 日。</p><p>发现表述与实际代码不一致？请在 <a class="inline" href="https://github.com/btrencai/zhaoxi/issues">GitHub Issues</a> 提出，我们会以可核验的实现为准修正。</p></article>
       </div>
     </div>
   </section>

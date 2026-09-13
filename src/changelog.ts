@@ -8,6 +8,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "1.2.1",
+    date: "2026-09-13",
+    highlights: [
+      "专注时钟全新设计：环内只保留时间与阶段标识，长句移出环外，视觉更专注、更克制",
+      "新增 阶段状态色：短休息暖琥珀、长休息青绿——圆环、光晕、主按钮与进度点随阶段一体变色",
+      "专注圆环加入柔和光晕与细腻渐变；进度点与选中态等细节优化",
+      "修复 系统通知横幅归属显示为「Windows PowerShell」：启动时自动注册通知身份，正确显示「朝夕」名称与图标",
+    ],
+  },
+  {
     version: "1.2.0",
     date: "2026-09-12",
     highlights: [

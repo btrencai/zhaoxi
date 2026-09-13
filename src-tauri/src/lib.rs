@@ -722,6 +722,209 @@ fn register_toast_identity(app: &AppHandle) {
 #[cfg(not(windows))]
 fn register_toast_identity(_app: &AppHandle) {}
 
+// ── 应用内升级（自动检测 → 下载校验 → 替换重启）────────────────
+
+/// 探测升级环境：程序目录是否可写、系统 curl 是否可用。
+#[tauri::command]
+fn update_env() -> serde_json::Value {
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        const CREATE_NO_WINDOW: u32 = 0x08000000;
+        let exe = std::env::current_exe().unwrap_or_default();
+        let dir = exe.parent().map(|d| d.to_path_buf());
+        let writable = dir
+            .as_ref()
+            .map(|d| {
+                let probe = d.join(".zhaoxi-write-probe");
+                let ok = std::fs::write(&probe, b"probe").is_ok();
+                let _ = std::fs::remove_file(&probe);
+                ok
+            })
+            .unwrap_or(false);
+        let has_curl = std::process::Command::new("curl")
+            .arg("--version")
+            .creation_flags(CREATE_NO_WINDOW)
+            .output()
+            .map(|o| o.status.success())
+            .unwrap_or(false);
+        serde_json::json!({
+            "exe": exe.display().to_string(),
+            "dir": dir.map(|d| d.display().to_string()).unwrap_or_default(),
+            "writable": writable,
+            "hasCurl": has_curl,
+        })
+    }
+    #[cfg(not(windows))]
+    {
+        serde_json::json!({ "exe": "", "dir": "", "writable": false, "hasCurl": false })
+    }
+}
+
+/// 用 certutil 计算文件 SHA256（零新增依赖）。
+fn sha256_file(path: &std::path::Path) -> Option<String> {
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        const CREATE_NO_WINDOW: u32 = 0x08000000;
+        let out = std::process::Command::new("certutil")
+            .args(["-hashfile", &path.display().to_string(), "SHA256"])
+            .creation_flags(CREATE_NO_WINDOW)
+            .output()
+            .ok()?;
+        let text = String::from_utf8_lossy(&out.stdout);
+        for line in text.lines() {
+            let t: String = line.trim().replace(' ', "");
+            if t.len() == 64 && t.chars().all(|c| c.is_ascii_hexdigit()) {
+                return Some(t.to_lowercase());
+            }
+        }
+        None
+    }
+    #[cfg(not(windows))]
+    {
+        let _ = path;
+        None
+    }
+}
+
+/// 后台下载更新包：curl 下载 → 进度事件 → SHA256 校验 → update-done / update-error 事件。
+#[tauri::command]
+fn update_download(app: AppHandle, url: String, sha256: String, version: String) -> Result<(), String> {
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        const CREATE_NO_WINDOW: u32 = 0x08000000;
+        let dir = std::env::temp_dir().join("zhaoxi-update");
+        std::fs::create_dir_all(&dir).map_err(|e| format!("无法创建更新目录：{e}"))?;
+        let safe: String = version
+            .chars()
+            .filter(|c| c.is_ascii_alphanumeric() || *c == '.' || *c == '-')
+            .collect();
+        let safe = if safe.is_empty() { "latest".to_string() } else { safe };
+        let dest = dir.join(format!("zhaoxi-{safe}.exe"));
+        let _ = std::fs::remove_file(&dest);
+        let dest_str = dest.display().to_string();
+        let app_thread = app.clone();
+        std::thread::spawn(move || {
+            // 先用 HEAD 拿总大小，用于进度百分比
+            let total: u64 = std::process::Command::new("curl")
+                .args(["-sIL", "--max-time", "60", &url])
+                .creation_flags(CREATE_NO_WINDOW)
+                .output()
+                .ok()
+                .map(|o| {
+                    String::from_utf8_lossy(&o.stdout)
+                        .lines()
+                        .filter_map(|l| {
+                            l.trim()
+                                .to_ascii_lowercase()
+                                .strip_prefix("content-length:")
+                                .and_then(|v| v.trim().parse::<u64>().ok())
+                        })
+                        .last()
+                        .unwrap_or(0)
+                })
+                .unwrap_or(0);
+            let mut child = match std::process::Command::new("curl")
+                .args([
+                    "-L", "--fail", "--silent", "--show-error",
+                    "--connect-timeout", "20", "--max-time", "900",
+                    "-o", &dest_str, &url,
+                ])
+                .creation_flags(CREATE_NO_WINDOW)
+                .stdin(std::process::Stdio::null())
+                .stdout(std::process::Stdio::null())
+                .stderr(std::process::Stdio::null())
+                .spawn()
+            {
+                Ok(c) => c,
+                Err(e) => {
+                    let _ = app_thread.emit("update-error", format!("无法启动下载进程：{e}"));
+                    return;
+                }
+            };
+            loop {
+                std::thread::sleep(std::time::Duration::from_millis(250));
+                let received = std::fs::metadata(&dest_str).map(|m| m.len()).unwrap_or(0);
+                let _ = app_thread.emit(
+                    "update-progress",
+                    serde_json::json!({ "received": received, "total": total }),
+                );
+                match child.try_wait() {
+                    Ok(Some(status)) => {
+                        if status.success() {
+                            break;
+                        }
+                        let _ = std::fs::remove_file(&dest_str);
+                        let _ = app_thread.emit("update-error", "下载失败：网络中断或服务器不可达".to_string());
+                        return;
+                    }
+                    Ok(None) => continue,
+                    Err(e) => {
+                        let _ = app_thread.emit("update-error", format!("下载进程异常：{e}"));
+                        return;
+                    }
+                }
+            }
+            let got = sha256_file(std::path::Path::new(&dest_str)).unwrap_or_default();
+            if !sha256.is_empty() && !got.eq_ignore_ascii_case(&sha256) {
+                let _ = std::fs::remove_file(&dest_str);
+                let _ = app_thread.emit("update-error", "下载文件校验失败，已丢弃".to_string());
+                return;
+            }
+            let _ = app_thread.emit("update-done", serde_json::json!({ "path": dest_str }));
+        });
+        Ok(())
+    }
+    #[cfg(not(windows))]
+    {
+        let _ = (app, url, sha256, version);
+        Err("当前平台不支持应用内升级".to_string())
+    }
+}
+
+/// 替换当前程序并重启：写一个隐藏的 PowerShell 助手，等本进程退出后覆盖 exe 再启动。
+#[tauri::command]
+fn update_apply(app: AppHandle, src: String) -> Result<(), String> {
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        const CREATE_NO_WINDOW: u32 = 0x08000000;
+        if !std::path::Path::new(&src).exists() {
+            return Err("更新文件不存在，请重新下载".to_string());
+        }
+        let cur = std::env::current_exe().map_err(|e| format!("无法定位当前程序：{e}"))?;
+        let src_q = src.replace('\'', "''");
+        let dst_q = cur.display().to_string().replace('\'', "''");
+        let script = format!(
+            "$src='{src_q}'; $dst='{dst_q}'; $ok=$false; \
+             for($i=0; $i -lt 240; $i++){{ try {{ Copy-Item -LiteralPath $src -Destination $dst -Force -ErrorAction Stop; $ok=$true; break }} catch {{ Start-Sleep -Milliseconds 750 }} }}; \
+             if($ok){{ Start-Process -FilePath $dst }} else {{ Invoke-Item (Split-Path -Parent $src) }}"
+        );
+        std::process::Command::new("powershell")
+            .args(["-NoProfile", "-ExecutionPolicy", "Bypass", "-WindowStyle", "Hidden", "-Command", &script])
+            .creation_flags(CREATE_NO_WINDOW)
+            .stdin(std::process::Stdio::null())
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .spawn()
+            .map_err(|e| format!("无法启动更新助手：{e}"))?;
+        let handle = app.clone();
+        std::thread::spawn(move || {
+            // 留出助手启动时间后退出；退出后助手才能覆盖 exe 并重启
+            std::thread::sleep(std::time::Duration::from_millis(500));
+            handle.exit(0);
+        });
+        Ok(())
+    }
+    #[cfg(not(windows))]
+    {
+        let _ = (app, src);
+        Err("当前平台不支持应用内升级".to_string())
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -792,7 +995,10 @@ pub fn run() {
             open_external,
             load_focus_state,
             save_focus_state,
-            clear_focus_state
+            clear_focus_state,
+            update_env,
+            update_download,
+            update_apply
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

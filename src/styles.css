@@ -330,6 +330,7 @@ input {
 }
 
 .nav-item {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -1710,6 +1711,36 @@ input {
 .ver-status .ver-ok { color: color-mix(in srgb, var(--accent) 70%, var(--text-1)); font-weight: 600; }
 .ver-status .ver-new { color: color-mix(in srgb, var(--accent) 85%, var(--text-1)); font-weight: 700; }
 .ver-status .ver-err { color: #d4654f; font-weight: 600; }
+.nav-item.has-update::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  width: 7px;
+  height: 7px;
+  margin-top: -3.5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+.ver-progress {
+  flex: 1 1 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-1) 12%, transparent);
+  overflow: hidden;
+}
+.ver-progress i {
+  display: block;
+  height: 100%;
+  width: 0%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transition: width 0.25s linear;
+}
+.ver-progress-text {
+  font-variant-numeric: tabular-nums;
+}
 .ver-log {
   margin: 2px 0 12px;
   max-height: 268px;

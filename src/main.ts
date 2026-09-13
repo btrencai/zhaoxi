@@ -2506,7 +2506,7 @@ function bindEvents() {
     els.verLogToggle.setAttribute("aria-expanded", String(show));
     if (show && els.verLog.childElementCount === 0) renderChangelog();
   });
-  type RelInfo = { latest: string; date: string; page: string; download: string };
+  type RelInfo = { latest: string; date: string; page: string; download: string; sha: string };
   const fetchJson = async (url: string, ms: number): Promise<unknown> => {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), ms);
@@ -2527,6 +2527,7 @@ function bindEvents() {
         latest?: string;
         date?: string;
         urls?: { china?: { page?: string; portable?: string }; github?: { page?: string } };
+        sha256?: { portable?: string };
       };
       if (!data || !data.latest) return null;
       const china = data.urls?.china ?? {};
@@ -2536,6 +2537,7 @@ function bindEvents() {
         date: String(data.date ?? ""),
         page: china.page || github.page || "",
         download: china.portable || china.page || github.page || "",
+        sha: String(data.sha256?.portable ?? ""),
       };
     } catch {
       return null;
@@ -2561,11 +2563,148 @@ function bindEvents() {
         date,
         page: release.html_url ?? "",
         download: release.html_url ?? "",
+        sha: "",
       };
     } catch {
       return null;
     }
   };
+  // 应用内升级状态机：idle（可升级）→ downloading（下载中）→ ready（待重启）
+  let updateInfo: RelInfo | null = null;
+  let updatePhase: "idle" | "downloading" | "ready" = "idle";
+  let updateDlPath = "";
+  const updateNavBtn = document.querySelector<HTMLElement>('.nav-item[data-view="settings"]');
+  const setNavBadge = (on: boolean) => updateNavBtn?.classList.toggle("has-update", on);
+  const manualBtnHtml = () => `<button class="btn-ghost" id="ver-manual" type="button">手动下载</button>`;
+  const bindManual = () => {
+    document.getElementById("ver-manual")?.addEventListener("click", () => {
+      const url = updateInfo?.page || updateInfo?.download || "";
+      void invoke("open_external", { url }).catch(() => toast("打开链接失败", "error"));
+    });
+  };
+  const renderVerError = (msg: string) => {
+    setVerStatus(
+      `<span class="ver-err">升级失败</span><span>${msg}</span>` +
+        `<button class="btn-ghost" id="ver-retry" type="button">重试</button>` +
+        manualBtnHtml()
+    );
+    document.getElementById("ver-retry")?.addEventListener("click", () => void beginUpgrade());
+    bindManual();
+  };
+  const renderVerPanel = () => {
+    const info = updateInfo;
+    if (!info) return;
+    if (updatePhase === "downloading") {
+      setVerStatus(
+        `<span class="ver-new">正在下载 v${info.latest}…</span>` +
+          `<div class="ver-progress"><i id="ver-bar"></i></div>` +
+          `<span class="ver-progress-text" id="ver-ptxt">正在连接…</span>`
+      );
+      return;
+    }
+    if (updatePhase === "ready") {
+      setVerStatus(
+        `<span class="ver-ok">v${info.latest} 已下载并通过校验 ✓</span>` +
+          `<button class="btn-primary" id="ver-relaunch" type="button">重启并更新</button>` +
+          `<span>应用将自动退出，替换为新版本后重新打开</span>`
+      );
+      document.getElementById("ver-relaunch")?.addEventListener("click", () => {
+        if (!updateDlPath) return;
+        setVerStatus(`<span class="ver-new">正在准备替换…</span>`);
+        void invoke("update_apply", { src: updateDlPath }).catch((err) => {
+          updatePhase = "idle";
+          renderVerError(String(err));
+        });
+      });
+      return;
+    }
+    setVerStatus(
+      `<span class="ver-new">发现新版本 v${info.latest}</span>` +
+        `<span>（当前 v${appVersionCache}${info.date ? ` · ${info.date}` : ""}）</span>` +
+        (info.sha ? `<button class="btn-primary" id="ver-upgrade" type="button">立即升级</button>` : "") +
+        manualBtnHtml()
+    );
+    document.getElementById("ver-upgrade")?.addEventListener("click", () => void beginUpgrade());
+    bindManual();
+  };
+  const beginUpgrade = async () => {
+    const info = updateInfo;
+    if (!info || updatePhase !== "idle") return;
+    try {
+      const env = await invoke<{ writable: boolean; hasCurl: boolean }>("update_env");
+      if (!env.hasCurl || !env.writable) {
+        setVerStatus(
+          `<span class="ver-err">无法自动升级</span>` +
+            `<span>${
+              env.hasCurl ? "当前程序目录不可写（可能安装在受保护位置），请手动下载安装包" : "系统缺少下载组件，请手动下载"
+            }</span>` +
+            manualBtnHtml()
+        );
+        bindManual();
+        return;
+      }
+    } catch (err) {
+      toast(`升级环境检测失败：${String(err)}`, "error");
+      return;
+    }
+    updatePhase = "downloading";
+    renderVerPanel();
+    try {
+      await invoke("update_download", {
+        url: info.download,
+        sha256: info.sha,
+        version: info.latest,
+      });
+    } catch (err) {
+      updatePhase = "idle";
+      renderVerError(String(err));
+    }
+  };
+  void listen<{ received: number; total: number }>("update-progress", (ev) => {
+    if (updatePhase !== "downloading") return;
+    const { received, total } = ev.payload;
+    const mb = (n: number) => (n / 1048576).toFixed(1);
+    const bar = document.getElementById("ver-bar");
+    const txt = document.getElementById("ver-ptxt");
+    if (bar && total > 0) bar.style.width = `${Math.min(100, (received / total) * 100).toFixed(1)}%`;
+    if (txt) {
+      txt.textContent =
+        total > 0 ? `${mb(received)} MB / ${mb(total)} MB` : received > 0 ? `已下载 ${mb(received)} MB` : "正在连接…";
+    }
+  });
+  void listen<{ path: string }>("update-done", (ev) => {
+    updatePhase = "ready";
+    updateDlPath = ev.payload.path;
+    renderVerPanel();
+  });
+  void listen<string>("update-error", (ev) => {
+    updatePhase = "idle";
+    renderVerError(String(ev.payload));
+  });
+  // 自动检测：启动 8 秒后静默检查一次，此后每 6 小时复查
+  const autoCheck = async () => {
+    const info = (await checkViaServer()) ?? (await checkViaGithub());
+    if (!info || cmpVer(info.latest, appVersionCache || "0.0.0") <= 0) return;
+    updateInfo = info;
+    setNavBadge(true);
+    if (updatePhase === "idle") renderVerPanel();
+    let seen = "";
+    try {
+      seen = localStorage.getItem("simple-todo.update.seen") ?? "";
+    } catch {
+      /* 忽略存储失败 */
+    }
+    if (seen !== info.latest) {
+      try {
+        localStorage.setItem("simple-todo.update.seen", info.latest);
+      } catch {
+        /* 忽略存储失败 */
+      }
+      toast(`发现新版本 v${info.latest} · 可在「设置 → 版本与更新」一键升级`);
+    }
+  };
+  window.setTimeout(() => void autoCheck(), 8000);
+  window.setInterval(() => void autoCheck(), 6 * 3600 * 1000);
   els.verCheck.addEventListener("click", async () => {
     els.verCheck.disabled = true;
     setVerStatus("正在检查更新…");
@@ -2576,16 +2715,12 @@ function bindEvents() {
         return;
       }
       if (cmpVer(info.latest, appVersionCache || "0.0.0") > 0) {
-        setVerStatus(
-          `<span class="ver-new">发现新版本 v${info.latest}</span><span>（当前 v${appVersionCache}）</span>` +
-            `<button class="btn-ghost" id="ver-download" type="button">前往下载</button>`
-        );
-        document.getElementById("ver-download")?.addEventListener("click", () => {
-          void invoke("open_external", { url: info.download || info.page }).catch(() =>
-            toast("打开链接失败", "error")
-          );
-        });
+        updateInfo = info;
+        setNavBadge(true);
+        renderVerPanel();
       } else {
+        updateInfo = null;
+        setNavBadge(false);
         const hint =
           cmpVer(info.latest, appVersionCache || "0.0.0") === 0
             ? `<span>最近发布：v${info.latest}${info.date ? ` · ${info.date}` : ""}</span>`
